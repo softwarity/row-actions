@@ -22,6 +22,14 @@ row-actions .actions-trigger {
   gap: 0.5em;
   padding: 0 8px;
   margin-top: 1px;
+
+  /* Border radius Material 3 style */
+  &.expand-from-right {
+    border-radius: 9999px 0 0 9999px; /* top-left, top-right, bottom-right, bottom-left */
+  }
+  &.expand-from-left {
+    border-radius: 0 9999px 9999px 0;
+  }
 }
 .cdk-overlay-container .row-actions-toolbar [mat-icon-button] {
   --mat-icon-button-state-layer-size: 36px;
