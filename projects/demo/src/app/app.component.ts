@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -45,7 +45,7 @@ const USERS_DATA: User[] = [
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements AfterViewInit {
   displayedColumns: string[] = ['id', 'name', 'email', 'role', 'status', 'actions'];
   dataSource = USERS_DATA;
 
@@ -58,8 +58,9 @@ export class AppComponent implements OnInit {
 
   constructor(private snackBar: MatSnackBar) {}
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this.highlightCode();
+    Prism.highlightAll();
   }
 
   get generatedCode(): string {
