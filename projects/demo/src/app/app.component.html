@@ -198,36 +198,68 @@
     <!-- Theming Section -->
     <section class="section">
       <h2>Theming (Material 3)</h2>
-      <p>The component uses Material 3 design tokens for theming. By default, it uses the <code>primary</code> color from your theme.</p>
-      <p>The toolbar uses these CSS custom properties that you can override:</p>
-      <ul class="feature-list">
-        <li><code>--mat-toolbar-container-background-color</code> - Background color</li>
-        <li><code>--mat-toolbar-container-text-color</code> - Text/icon color</li>
-      </ul>
-      <p>To customize the colors, override these properties in your styles:</p>
-      <pre><code class="language-css">/* Use secondary color */
-row-actions mat-toolbar &#123;
-  --mat-toolbar-container-background-color: var(--mat-sys-secondary);
-  --mat-toolbar-container-text-color: var(--mat-sys-on-secondary);
+      <p>The component provides a SCSS mixin to customize the toolbar colors. This approach follows Angular Material's theming pattern.</p>
+      <p>In your application's <code>styles.scss</code>, import the theme file and call the <code>overrides</code> mixin:</p>
+      <pre><code class="language-scss">&#64;use '&#64;angular/material' as mat;
+&#64;use '&#64;softwarity/row-actions/row-actions-theme' as row-actions;
+
+// Your Material 3 theme
+html &#123;
+  &#64;include mat.theme((
+    color: (
+      primary: mat.$violet-palette,
+      tertiary: mat.$yellow-palette
+    ),
+    typography: Roboto,
+    density: 0
+  ));
 &#125;
 
-/* Use tertiary color */
-row-actions mat-toolbar &#123;
-  --mat-toolbar-container-background-color: var(--mat-sys-tertiary);
-  --mat-toolbar-container-text-color: var(--mat-sys-on-tertiary);
-&#125;
+// Row actions theme (required)
+&#64;include row-actions.overrides();</code></pre>
 
-/* Use error color */
-row-actions mat-toolbar &#123;
-  --mat-toolbar-container-background-color: var(--mat-sys-error);
-  --mat-toolbar-container-text-color: var(--mat-sys-on-error);
-&#125;
+      <h3>Customization</h3>
+      <p>The <code>overrides</code> mixin accepts a map of tokens to customize the toolbar appearance:</p>
+      <div class="api-table-wrapper">
+        <table class="api-table">
+          <thead>
+            <tr>
+              <th>Token</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>container-background-color</code></td>
+              <td><code>var(--mat-sys-surface-container)</code></td>
+              <td>Toolbar background color</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-/* Custom color */
-row-actions mat-toolbar &#123;
-  --mat-toolbar-container-background-color: #1976d2;
-  --mat-toolbar-container-text-color: white;
-&#125;</code></pre>
+      <h3>Examples</h3>
+      <pre><code class="language-scss">// Use Material 3 system colors
+&#64;include row-actions.overrides((
+  container-background-color: var(--mat-sys-secondary)
+));
+
+// Use tertiary color
+&#64;include row-actions.overrides((
+  container-background-color: var(--mat-sys-tertiary)
+));
+
+// Use error color for danger actions
+&#64;include row-actions.overrides((
+  container-background-color: var(--mat-sys-error)
+));
+
+// Custom color
+&#64;include row-actions.overrides((
+  container-background-color: #1976d2
+));</code></pre>
+      <p>To customize the icon buttons, use Angular Material's <code>matIconButton</code> overrides directly.</p>
     </section>
 
     <!-- Position Behavior Section -->
