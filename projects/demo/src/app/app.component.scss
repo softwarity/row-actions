@@ -185,21 +185,33 @@
   }
 }
 
-// Demo Controls
-.demo-controls {
+// Table Controls (near the table)
+.table-controls {
   display: flex;
   align-items: center;
-  gap: 24px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-
-  mat-form-field {
-    width: 150px;
-    margin-bottom: -1.25em; // Compense le subscript wrapper de mat-form-field
-  }
+  gap: 12px;
+  margin-bottom: 12px;
 
   mat-checkbox {
     color: var(--text-secondary);
+  }
+
+  .control-hint {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-style: italic;
+  }
+
+  .theme-toggle {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    .theme-label {
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
   }
 }
 

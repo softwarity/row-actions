@@ -48,11 +48,6 @@
     <section class="section demo-section">
       <h2>Demo</h2>
 
-      <!-- Controls -->
-      <div class="demo-controls">
-        <mat-checkbox [(ngModel)]="disabled" (change)="highlightCode()" color="primary">disabled</mat-checkbox>
-      </div>
-
       <!-- Generated Code -->
       <div class="generated-code">
         <pre><code class="language-html" [innerHTML]="highlightedCode"></code></pre>
@@ -60,6 +55,18 @@
 
       <!-- Demo Table -->
       <p class="demo-hint">Hover over a row to see the actions appear. Notice how the toolbar appears from the <strong>left</strong> on the Name column and from the <strong>right</strong> on Email and Actions columns, depending on the position of <code>&lt;row-actions&gt;</code> within the cell.</p>
+
+      <!-- Table Controls -->
+      <div class="table-controls">
+        <mat-checkbox [(ngModel)]="disabled" (change)="highlightCode()" color="primary">disabled</mat-checkbox>
+        <span class="control-hint">Disables the toolbar appearance on the Actions column</span>
+        <div class="theme-toggle">
+          <span class="theme-label">Material 3 {{ isDarkMode ? 'Dark' : 'Light' }}</span>
+          <button mat-icon-button (click)="toggleTheme()" [title]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'">
+            <mat-icon>{{ isDarkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+          </button>
+        </div>
+      </div>
 
       <div class="demo-table-wrapper">
         <mat-table [dataSource]="dataSource" class="demo-table">
@@ -192,34 +199,34 @@
     <section class="section">
       <h2>Theming (Material 3)</h2>
       <p>The component uses Material 3 design tokens for theming. By default, it uses the <code>primary</code> color from your theme.</p>
-      <p>The toolbar automatically inherits colors from these CSS custom properties:</p>
+      <p>The toolbar uses these CSS custom properties that you can override:</p>
       <ul class="feature-list">
-        <li><code>--mat-sys-primary</code> - Background color</li>
-        <li><code>--mat-sys-on-primary</code> - Text/icon color</li>
+        <li><code>--mat-toolbar-container-background-color</code> - Background color</li>
+        <li><code>--mat-toolbar-container-text-color</code> - Text/icon color</li>
       </ul>
-      <p>To customize the colors, you can override these CSS custom properties in your styles:</p>
+      <p>To customize the colors, override these properties in your styles:</p>
       <pre><code class="language-css">/* Use secondary color */
 row-actions mat-toolbar &#123;
-  background-color: var(--mat-sys-secondary);
-  color: var(--mat-sys-on-secondary);
+  --mat-toolbar-container-background-color: var(--mat-sys-secondary);
+  --mat-toolbar-container-text-color: var(--mat-sys-on-secondary);
 &#125;
 
 /* Use tertiary color */
 row-actions mat-toolbar &#123;
-  background-color: var(--mat-sys-tertiary);
-  color: var(--mat-sys-on-tertiary);
+  --mat-toolbar-container-background-color: var(--mat-sys-tertiary);
+  --mat-toolbar-container-text-color: var(--mat-sys-on-tertiary);
 &#125;
 
 /* Use error color */
 row-actions mat-toolbar &#123;
-  background-color: var(--mat-sys-error);
-  color: var(--mat-sys-on-error);
+  --mat-toolbar-container-background-color: var(--mat-sys-error);
+  --mat-toolbar-container-text-color: var(--mat-sys-on-error);
 &#125;
 
 /* Custom color */
 row-actions mat-toolbar &#123;
-  background-color: #1976d2;
-  color: white;
+  --mat-toolbar-container-background-color: #1976d2;
+  --mat-toolbar-container-text-color: white;
 &#125;</code></pre>
     </section>
 

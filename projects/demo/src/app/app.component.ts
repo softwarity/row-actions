@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RowActionComponent } from '@hhangular/row-actions';
+
 
 declare const Prism: any;
 
@@ -44,21 +45,21 @@ const USERS_DATA: User[] = [
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements OnInit {
   displayedColumns: string[] = ['id', 'name', 'email', 'role', 'status', 'actions'];
   dataSource = USERS_DATA;
 
   // Configuration options
   disabled = false;
+  isDarkMode = false;
 
   // Highlighted code for display
   highlightedCode = '';
 
   constructor(private snackBar: MatSnackBar) {}
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     this.highlightCode();
-    Prism.highlightAll();
   }
 
   get generatedCode(): string {
@@ -67,6 +68,7 @@ export class AppComponent implements AfterViewInit {
       attrs.push('[disabled]="true"');
     }
     const attrsStr = attrs.length > 0 ? ' ' + attrs.join(' ') : '';
+
     return `<row-actions${attrsStr}>
   <button mat-icon-button (click)="edit(element)">
     <mat-icon>edit</mat-icon>
@@ -80,6 +82,11 @@ export class AppComponent implements AfterViewInit {
   highlightCode(): void {
     const code = this.generatedCode;
     this.highlightedCode = Prism.highlight(code, Prism.languages.html, 'html');
+  }
+
+  toggleTheme(): void {
+    this.isDarkMode = !this.isDarkMode;
+    document.body.classList.toggle('dark-mode', this.isDarkMode);
   }
 
   onEdit(user: User): void {

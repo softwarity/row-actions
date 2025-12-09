@@ -115,35 +115,35 @@ You can place `<row-actions>` in **any cell** of your table, not just a dedicate
 
 The component uses Material 3 design tokens for theming. By default, it uses the `primary` color from your theme.
 
-The toolbar automatically inherits colors from these CSS custom properties:
-- `--mat-sys-primary` - Background color
-- `--mat-sys-on-primary` - Text/icon color
+The toolbar uses these CSS custom properties that you can override:
+- `--mat-toolbar-container-background-color` - Background color
+- `--mat-toolbar-container-text-color` - Text/icon color
 
 To customize the colors, override these properties in your styles:
 
 ```css
 /* Use secondary color */
 row-actions mat-toolbar {
-  background-color: var(--mat-sys-secondary);
-  color: var(--mat-sys-on-secondary);
+  --mat-toolbar-container-background-color: var(--mat-sys-secondary);
+  --mat-toolbar-container-text-color: var(--mat-sys-on-secondary);
 }
 
 /* Use tertiary color */
 row-actions mat-toolbar {
-  background-color: var(--mat-sys-tertiary);
-  color: var(--mat-sys-on-tertiary);
+  --mat-toolbar-container-background-color: var(--mat-sys-tertiary);
+  --mat-toolbar-container-text-color: var(--mat-sys-on-tertiary);
 }
 
 /* Use error color */
 row-actions mat-toolbar {
-  background-color: var(--mat-sys-error);
-  color: var(--mat-sys-on-error);
+  --mat-toolbar-container-background-color: var(--mat-sys-error);
+  --mat-toolbar-container-text-color: var(--mat-sys-on-error);
 }
 
 /* Custom color */
 row-actions mat-toolbar {
-  background-color: #1976d2;
-  color: white;
+  --mat-toolbar-container-background-color: #1976d2;
+  --mat-toolbar-container-text-color: white;
 }
 ```
 

@@ -30,11 +30,7 @@ import { BehaviorSubject } from 'rxjs';
     }
     mat-toolbar {
       gap: 0.5em;
-      /* Reset default mat-toolbar padding for compact display */
       padding: 0 8px;
-      /* Material 3 theming - uses primary color by default */
-      background-color: var(--mat-sys-primary, var(--mat-toolbar-container-background-color, #673ab7));
-      color: var(--mat-sys-on-primary, var(--mat-toolbar-container-text-color, white));
     }
     /* Icon button styling - compact size for table rows */
     ::ng-deep mat-toolbar [mat-icon-button] {

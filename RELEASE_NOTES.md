@@ -1,13 +1,13 @@
 # Release Notes
 
-## 3.0.0
+## 3.0.1
 
 ### Breaking Changes
 - **Removed `color` input** - The `color` input (`primary`, `accent`, `warn`) has been removed in favor of Material 3 theming via CSS custom properties
-- **Migration**: Replace `[color]="'warn'"` with CSS: `row-actions mat-toolbar { background-color: var(--mat-sys-error); color: var(--mat-sys-on-error); }`
+- **Migration**: Replace `[color]="'warn'"` with CSS: `row-actions mat-toolbar { --mat-toolbar-container-background-color: var(--mat-sys-error); --mat-toolbar-container-text-color: var(--mat-sys-on-error); }`
 
 ### Material 3 Support
-- **M3 Design Tokens** - Uses Material 3 CSS custom properties for theming (`--mat-sys-primary`, `--mat-sys-on-primary`, etc.)
+- **M3 Design Tokens** - Uses Material 3 toolbar tokens (`--mat-toolbar-container-background-color`, `--mat-toolbar-container-text-color`)
 - **Improved vertical alignment** - Toolbar now uses center positioning for better alignment with table rows
 
 ---
