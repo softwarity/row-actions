@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, HostBinding, inject, input } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, HostBinding, inject, input, ViewEncapsulation } from '@angular/core';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BehaviorSubject } from 'rxjs';
@@ -11,6 +11,7 @@ import { BehaviorSubject } from 'rxjs';
       <span class="actions-trigger" cdkOverlayOrigin #trigger="cdkOverlayOrigin"></span>
       <ng-template cdkConnectedOverlay [cdkConnectedOverlayPositions]="overlayPositions" [cdkConnectedOverlayOrigin]="trigger" [cdkConnectedOverlayOpen]="!!(open$ | async)">
         <mat-toolbar
+          class="row-actions-toolbar"
           [style.height]="heightToolbar"
           [style.min-height]="heightToolbar"
           [style.max-height]="heightToolbar"
@@ -24,85 +25,14 @@ import { BehaviorSubject } from 'rxjs';
       </ng-template>
     }
   `,
-  styles: [`
-    :host {
-      position: relative;
-      height: 100%;
-      display: flex;
-    }
-    .actions-trigger {
-      display: flex;
-      flex-grow: 1;
-    }
-    mat-toolbar {
-      gap: 0.5em;
-      padding: 0 8px;
-    }
-    /* Icon button styling - compact size for table rows */
-    ::ng-deep mat-toolbar [mat-icon-button] {
-      --mat-icon-button-state-layer-size: 36px;
-      --mat-icon-button-icon-size: 18px;
-      width: 36px;
-      height: 36px;
-      padding: 9px;
-    }
-    ::ng-deep mat-toolbar [mat-icon-button] mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
-    }
-    /* Inherit color for icon buttons from toolbar */
-    ::ng-deep mat-toolbar [mat-icon-button] {
-      color: inherit;
-    }
-
-    /* Native CSS animations - expand from right */
-    mat-toolbar.expand-from-right.enter-animation {
-      animation: expandFromRightEnter 300ms ease-out forwards;
-    }
-    mat-toolbar.expand-from-right.leave-animation {
-      animation: expandFromRightLeave 300ms ease-in forwards;
-    }
-
-    /* Native CSS animations - expand from left */
-    mat-toolbar.expand-from-left.enter-animation {
-      animation: expandFromLeftEnter 300ms ease-out forwards;
-    }
-    mat-toolbar.expand-from-left.leave-animation {
-      animation: expandFromLeftLeave 300ms ease-in forwards;
-    }
-
-    /* No animation - instant show/hide */
-    mat-toolbar.no-animation {
-      clip-path: inset(0 0 0 0);
-    }
-
-    @keyframes expandFromRightEnter {
-      from { clip-path: inset(0 0 0 100%); }
-      to { clip-path: inset(0 0 0 0); }
-    }
-
-    @keyframes expandFromRightLeave {
-      from { clip-path: inset(0 0 0 0); }
-      to { clip-path: inset(0 0 0 100%); }
-    }
-
-    @keyframes expandFromLeftEnter {
-      from { clip-path: inset(0 100% 0 0); }
-      to { clip-path: inset(0 0 0 0); }
-    }
-
-    @keyframes expandFromLeftLeave {
-      from { clip-path: inset(0 0 0 0); }
-      to { clip-path: inset(0 100% 0 0); }
-    }
-  `],
+  styleUrl: './row-actions.component.scss',
   imports: [
     AsyncPipe,
     MatToolbarModule,
     OverlayModule,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None
 })
 export class RowActionComponent implements AfterViewInit {
 
@@ -173,7 +103,7 @@ export class RowActionComponent implements AfterViewInit {
 
     this.mouseEnterListener = () => {
       const currentParentStyle = getComputedStyle(parentElement);
-      this.heightToolbar = currentParentStyle.height;
+      this.heightToolbar = parseInt(currentParentStyle.height) - 1 + 'px';
       this.open$.next(true);
       document.addEventListener('mousemove', this.mouseMoveListener);
     };

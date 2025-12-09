@@ -1,3 +1,5 @@
+@use '@angular/material' as mat;
+
 // Main Content
 .main-content {
   min-height: 100vh;
@@ -232,24 +234,91 @@
 }
 
 .demo-table {
+  @include mat.table-overrides((
+    // background-color: var(--mat-sys-primary)
+    // header-headline-color: rgb(29, 101, 216),
+    // row-item-outline-color: red,
+  ));
+}
+
+/**
+--mat-sys-primary
+--mat-sys-on-primary
+--mat-sys-primary-container
+--mat-sys-on-primary-container
+--mat-sys-primary-fixed
+--mat-sys-on-primary-fixed
+--mat-sys-on-primary-fixed-variant
+--mat-sys-primary-fixed-dim
+--mat-sys-inverse-primary
+
+--mat-sys-secondary
+--mat-sys-on-secondary
+--mat-sys-secondary-container
+--mat-sys-on-secondary-container
+--mat-sys-secondary-fixed
+--mat-sys-on-secondary-fixed
+--mat-sys-on-secondary-fixed-variant
+--mat-sys-secondary-fixed-dim
+
+--mat-sys-tertiary
+--mat-sys-on-tertiary
+--mat-sys-tertiary-container
+--mat-sys-on-tertiary-container
+--mat-sys-tertiary-fixed
+--mat-sys-on-tertiary-fixed
+--mat-sys-on-tertiary-fixed-variant
+--mat-sys-tertiary-fixed-dim
+
+--mat-sys-error
+--mat-sys-on-error
+--mat-sys-error-container
+--mat-sys-on-error-container
+
+--mat-sys-surface
+--mat-sys-on-surface
+--mat-sys-on-surface-variant
+--mat-sys-surface-bright
+--mat-sys-surface-container
+--mat-sys-surface-container-high
+--mat-sys-surface-container-highest
+--mat-sys-surface-container-low
+--mat-sys-surface-container-lowest
+--mat-sys-surface-dim
+--mat-sys-surface-tint
+--mat-sys-surface-variant
+--mat-sys-inverse-surface
+--mat-sys-inverse-on-surface
+
+--mat-sys-background
+--mat-sys-on-background
+--mat-sys-neutral-variant20
+--mat-sys-neutral10
+--mat-sys-outline
+--mat-sys-outline-variant
+--mat-sys-scrim
+--mat-sys-shadow
+*/
+
+.demo-table {
   width: 100%;
 
   .mat-mdc-header-row {
-    background-color: rgba(0, 0, 0, 0.2);
+    // background-color: rgba(0, 0, 0, 0.2);
   }
 
   .mat-mdc-header-cell {
-    color: var(--text-primary);
-    font-weight: 600;
+    // color: var(--text-primary);
+    // font-weight: 600;
   }
 
   .mat-mdc-cell {
-    color: var(--text-secondary);
+    // color: var(--text-secondary);
   }
 
   .mat-mdc-row {
     &:hover {
-      background-color: rgba(88, 166, 255, 0.05);
+      // background-color: rgba(88, 166, 255, 0.05);
     }
   }
 }

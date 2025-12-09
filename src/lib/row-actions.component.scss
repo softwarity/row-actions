@@ -1,0 +1,78 @@
+@use '@angular/material' as mat;
+
+/* Host styles */
+row-actions {
+  position: relative;
+  height: 100%;
+  display: flex;
+}
+row-actions .actions-trigger {
+  display: flex;
+  flex-grow: 1;
+}
+
+.cdk-overlay-container .row-actions-toolbar {
+  @include mat.toolbar-overrides((
+    container-background-color: var(--mat-sys-surface-container)
+  ));
+}
+
+/* Toolbar styles (rendered in overlay container) */
+.cdk-overlay-container .row-actions-toolbar {
+  gap: 0.5em;
+  padding: 0 8px;
+  margin-top: 1px;
+}
+.cdk-overlay-container .row-actions-toolbar [mat-icon-button] {
+  --mat-icon-button-state-layer-size: 36px;
+  --mat-icon-button-icon-size: 18px;
+  width: 36px;
+  height: 36px;
+  padding: 9px;
+}
+.cdk-overlay-container .row-actions-toolbar [mat-icon-button] mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Native CSS animations - expand from right */
+.cdk-overlay-container .row-actions-toolbar.expand-from-right.enter-animation {
+  animation: rowActionsExpandFromRightEnter 300ms ease-out forwards;
+}
+.cdk-overlay-container .row-actions-toolbar.expand-from-right.leave-animation {
+  animation: rowActionsExpandFromRightLeave 300ms ease-in forwards;
+}
+
+/* Native CSS animations - expand from left */
+.cdk-overlay-container .row-actions-toolbar.expand-from-left.enter-animation {
+  animation: rowActionsExpandFromLeftEnter 300ms ease-out forwards;
+}
+.cdk-overlay-container .row-actions-toolbar.expand-from-left.leave-animation {
+  animation: rowActionsExpandFromLeftLeave 300ms ease-in forwards;
+}
+
+/* No animation - instant show/hide */
+.cdk-overlay-container .row-actions-toolbar.no-animation {
+  clip-path: inset(0 0 0 0);
+}
+
+@keyframes rowActionsExpandFromRightEnter {
+  from { clip-path: inset(0 0 0 100%); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes rowActionsExpandFromRightLeave {
+  from { clip-path: inset(0 0 0 0); }
+  to { clip-path: inset(0 0 0 100%); }
+}
+
+@keyframes rowActionsExpandFromLeftEnter {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes rowActionsExpandFromLeftLeave {
+  from { clip-path: inset(0 0 0 0); }
+  to { clip-path: inset(0 100% 0 0); }
+}

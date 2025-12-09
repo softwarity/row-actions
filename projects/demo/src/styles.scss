@@ -1,19 +1,19 @@
 @use '@angular/material' as mat;
 
 // Material 3 Theme
-.demo-table-wrapper {
+html {
   color-scheme: light;
   @include mat.theme((
     color: (
       primary: mat.$violet-palette,
-      tertiary: mat.$orange-palette
+      tertiary: mat.$yellow-palette
     ),
     typography: Roboto,
     density: 0
   ));
 }
 
-body.dark-mode .demo-table-wrapper {
+body.dark-mode {
   color-scheme: dark;
 }
 

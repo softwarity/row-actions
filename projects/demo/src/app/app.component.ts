@@ -51,7 +51,7 @@ export class AppComponent implements OnInit {
 
   // Configuration options
   disabled = false;
-  isDarkMode = false;
+  isDarkMode = document.body.classList.contains('dark-mode');
 
   // Highlighted code for display
   highlightedCode = '';
