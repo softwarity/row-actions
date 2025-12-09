@@ -42,6 +42,31 @@ export class RowActionComponent implements AfterViewInit {
 
   private matRowElement: HTMLElement | null = null;
   private rowMouseMoveListener: (() => void) | null = null;
+  private openTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private closeTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
+  private static readonly OPEN_DELAY = 50;
+  private static readonly CLOSE_DELAY = 50;
+
+  // Track all instances to close others when one opens
+  private static instances = new Set<RowActionComponent>();
+
+  private static cancelOthers(except: RowActionComponent): void {
+    for (const instance of RowActionComponent.instances) {
+      // Only affect instances from OTHER rows, not the same row
+      if (instance.matRowElement !== except.matRowElement) {
+        // Cancel pending open
+        if (instance.openTimeoutId) {
+          clearTimeout(instance.openTimeoutId);
+          instance.openTimeoutId = null;
+        }
+        // Close if open
+        if (instance.open$.value) {
+          instance.closeImmediately();
+        }
+      }
+    }
+  }
 
   overlayPositions: ConnectedPosition[] = [{ originY: 'center', originX: 'end', overlayY: 'center', overlayX: 'end' }];
 
@@ -101,13 +126,28 @@ export class RowActionComponent implements AfterViewInit {
       return;
     }
 
+    // Register this instance
+    RowActionComponent.instances.add(this);
+
     // Listen to mousemove on the row itself - more reliable than mouseenter
     this.rowMouseMoveListener = () => {
-      if (!this.open$.value) {
-        const currentParentStyle = getComputedStyle(parentElement);
-        this.heightToolbar = parseInt(currentParentStyle.height) - 1 + 'px';
-        this.open$.next(true);
-        document.addEventListener('mousemove', this.documentMouseMoveListener);
+      // Cancel pending opens and close toolbars from other rows immediately
+      RowActionComponent.cancelOthers(this);
+
+      // Cancel any pending close for this row
+      if (this.closeTimeoutId) {
+        clearTimeout(this.closeTimeoutId);
+        this.closeTimeoutId = null;
+      }
+
+      if (!this.open$.value && !this.openTimeoutId) {
+        this.openTimeoutId = setTimeout(() => {
+          this.openTimeoutId = null;
+          const currentParentStyle = getComputedStyle(parentElement);
+          this.heightToolbar = parseInt(currentParentStyle.height) - 1 + 'px';
+          this.open$.next(true);
+          document.addEventListener('mousemove', this.documentMouseMoveListener);
+        }, RowActionComponent.OPEN_DELAY);
       }
     };
 
@@ -115,12 +155,34 @@ export class RowActionComponent implements AfterViewInit {
 
     // Cleanup on destroy
     this.destroyRef.onDestroy(() => {
+      RowActionComponent.instances.delete(this);
       this.open$.complete();
+      if (this.openTimeoutId) {
+        clearTimeout(this.openTimeoutId);
+      }
+      if (this.closeTimeoutId) {
+        clearTimeout(this.closeTimeoutId);
+      }
       document.removeEventListener('mousemove', this.documentMouseMoveListener);
       if (this.matRowElement && this.rowMouseMoveListener) {
         this.matRowElement.removeEventListener('mousemove', this.rowMouseMoveListener);
       }
     });
+  }
+
+  private closeImmediately(): void {
+    if (this.openTimeoutId) {
+      clearTimeout(this.openTimeoutId);
+      this.openTimeoutId = null;
+    }
+    if (this.closeTimeoutId) {
+      clearTimeout(this.closeTimeoutId);
+      this.closeTimeoutId = null;
+    }
+    if (this.open$.value) {
+      this.open$.next(false);
+      document.removeEventListener('mousemove', this.documentMouseMoveListener);
+    }
   }
 
   private readonly documentMouseMoveListener = (event: MouseEvent): void => {
@@ -132,7 +194,20 @@ export class RowActionComponent implements AfterViewInit {
         return;
       }
     }
-    this.open$.next(false);
-    document.removeEventListener('mousemove', this.documentMouseMoveListener);
+
+    // Cancel any pending open
+    if (this.openTimeoutId) {
+      clearTimeout(this.openTimeoutId);
+      this.openTimeoutId = null;
+    }
+
+    // Debounce close
+    if (!this.closeTimeoutId) {
+      this.closeTimeoutId = setTimeout(() => {
+        this.closeTimeoutId = null;
+        this.open$.next(false);
+        document.removeEventListener('mousemove', this.documentMouseMoveListener);
+      }, RowActionComponent.CLOSE_DELAY);
+    }
   };
 }
