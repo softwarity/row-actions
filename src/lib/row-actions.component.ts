@@ -1,4 +1,3 @@
-import { animate, state, style, transition, trigger } from '@angular/animations';
 import { AsyncPipe } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, HostBinding, inject, input } from '@angular/core';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
@@ -7,12 +6,19 @@ import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'row-actions',
-  standalone: true,
   template: `
     @if (!disabled()) {
       <span class="actions-trigger" cdkOverlayOrigin #trigger="cdkOverlayOrigin"></span>
       <ng-template cdkConnectedOverlay [cdkConnectedOverlayPositions]="overlayPositions" [cdkConnectedOverlayOrigin]="trigger" [cdkConnectedOverlayOpen]="!!(open$ | async)">
-        <mat-toolbar [style.height]="heightToolbar" [style.min-height]="heightToolbar" [style.max-height]="heightToolbar" [@expandFromRight]="animatedFrom" [@expandFromLeft]="animatedFrom">
+        <mat-toolbar
+          [style.height]="heightToolbar"
+          [style.min-height]="heightToolbar"
+          [style.max-height]="heightToolbar"
+          [class.expand-from-right]="animatedFrom === 'right'"
+          [class.expand-from-left]="animatedFrom === 'left'"
+          [class.no-animation]="animatedFrom === null"
+          animate.enter="enter-animation"
+          animate.leave="leave-animation">
           <ng-content></ng-content>
         </mat-toolbar>
       </ng-template>
@@ -49,25 +55,52 @@ import { BehaviorSubject } from 'rxjs';
     ::ng-deep mat-toolbar [mat-icon-button] {
       color: inherit;
     }
+
+    /* Native CSS animations - expand from right */
+    mat-toolbar.expand-from-right.enter-animation {
+      animation: expandFromRightEnter 300ms ease-out forwards;
+    }
+    mat-toolbar.expand-from-right.leave-animation {
+      animation: expandFromRightLeave 300ms ease-in forwards;
+    }
+
+    /* Native CSS animations - expand from left */
+    mat-toolbar.expand-from-left.enter-animation {
+      animation: expandFromLeftEnter 300ms ease-out forwards;
+    }
+    mat-toolbar.expand-from-left.leave-animation {
+      animation: expandFromLeftLeave 300ms ease-in forwards;
+    }
+
+    /* No animation - instant show/hide */
+    mat-toolbar.no-animation {
+      clip-path: inset(0 0 0 0);
+    }
+
+    @keyframes expandFromRightEnter {
+      from { clip-path: inset(0 0 0 100%); }
+      to { clip-path: inset(0 0 0 0); }
+    }
+
+    @keyframes expandFromRightLeave {
+      from { clip-path: inset(0 0 0 0); }
+      to { clip-path: inset(0 0 0 100%); }
+    }
+
+    @keyframes expandFromLeftEnter {
+      from { clip-path: inset(0 100% 0 0); }
+      to { clip-path: inset(0 0 0 0); }
+    }
+
+    @keyframes expandFromLeftLeave {
+      from { clip-path: inset(0 0 0 0); }
+      to { clip-path: inset(0 100% 0 0); }
+    }
   `],
   imports: [
     AsyncPipe,
     MatToolbarModule,
     OverlayModule,
-  ],
-  animations: [
-    trigger('expandFromRight', [
-      state('void', style({ clipPath: 'inset(0 0 0 100%)' })),
-      state('right', style({ clipPath: 'inset(0 0 0 0)' })),
-      transition('void => right', animate('300ms ease-out')),
-      transition('right => void', animate('300ms ease-in'))
-    ]),
-    trigger('expandFromLeft', [
-      state('void', style({ clipPath: 'inset(0 100% 0 0)' })),
-      state('left', style({ clipPath: 'inset(0 0 0 0)' })),
-      transition('void => left', animate('300ms ease-out')),
-      transition('left => void', animate('300ms ease-in'))
-    ])
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })

@@ -1,7 +1,6 @@
-import { ComponentFixture, TestBed, fakeAsync, tick, flush } from '@angular/core/testing';
-import { Component, DebugElement } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component, DebugElement, provideZonelessChangeDetection } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RowActionComponent } from './row-actions.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
@@ -106,11 +105,17 @@ class TestHostMultipleRowsComponent {
   ];
 }
 
+// Helper function to wait for setTimeout in zoneless mode
+function waitForTimeout(ms = 0): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 // Helper function to properly initialize component with host bindings
-function initializeFixture<T>(fixture: ComponentFixture<T>): void {
+async function initializeFixture<T>(fixture: ComponentFixture<T>): Promise<void> {
   fixture.detectChanges();
-  // Flush microtasks and trigger another change detection cycle
-  // to handle @HostBinding updates in ngAfterViewInit
+  await fixture.whenStable();
+  // Wait for setTimeout in ngAfterViewInit
+  await waitForTimeout(10);
   fixture.detectChanges();
 }
 
@@ -122,15 +127,13 @@ describe('RowActionComponent', () => {
 
     beforeEach(async () => {
       await TestBed.configureTestingModule({
-        imports: [
-          TestHostComponent,
-          NoopAnimationsModule
-        ]
+        imports: [TestHostComponent],
+        providers: [provideZonelessChangeDetection()]
       }).compileComponents();
 
       fixture = TestBed.createComponent(TestHostComponent);
       hostComponent = fixture.componentInstance;
-      initializeFixture(fixture);
+      await initializeFixture(fixture);
 
       rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
     });
@@ -139,17 +142,27 @@ describe('RowActionComponent', () => {
       expect(rowActionDebugElement).toBeTruthy();
     });
 
-    it('should be hidden when disabled', () => {
-      hostComponent.disabled = true;
-      fixture.detectChanges();
+    it('should be hidden when disabled', async () => {
+      // Create a new fixture with disabled=true from the start
+      await TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [TestHostComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
-      const trigger = rowActionDebugElement.query(By.css('.actions-trigger'));
+      const disabledFixture = TestBed.createComponent(TestHostComponent);
+      disabledFixture.componentInstance.disabled = true;
+      await initializeFixture(disabledFixture);
+
+      const rowAction = disabledFixture.debugElement.query(By.directive(RowActionComponent));
+      const trigger = rowAction.query(By.css('.actions-trigger'));
       expect(trigger).toBeNull();
     });
 
-    it('should be visible when not disabled', () => {
+    it('should be visible when not disabled', async () => {
       hostComponent.disabled = false;
       fixture.detectChanges();
+      await fixture.whenStable();
 
       const trigger = rowActionDebugElement.query(By.css('.actions-trigger'));
       expect(trigger).toBeTruthy();
@@ -162,88 +175,73 @@ describe('RowActionComponent', () => {
   });
 
   describe('Position detection', () => {
-    it('should detect right position when row-actions is last child', fakeAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          TestHostComponent,
-          NoopAnimationsModule
-        ]
-      });
+    it('should detect right position when row-actions is last child', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
       const fixture = TestBed.createComponent(TestHostComponent);
-      fixture.detectChanges();
-      tick();
-      fixture.detectChanges();
+      await initializeFixture(fixture);
 
       const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
       const component = rowActionDebugElement.componentInstance as RowActionComponent;
 
       expect(component.position).toBe('right');
-      flush();
-    }));
+    });
 
-    it('should detect left position when row-actions is first child', fakeAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          TestHostLeftComponent,
-          NoopAnimationsModule
-        ]
-      });
+    it('should detect left position when row-actions is first child', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostLeftComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
       const fixture = TestBed.createComponent(TestHostLeftComponent);
-      fixture.detectChanges();
-      tick();
-      fixture.detectChanges();
+      await initializeFixture(fixture);
 
       const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
       const component = rowActionDebugElement.componentInstance as RowActionComponent;
 
       expect(component.position).toBe('left');
-      flush();
-    }));
+    });
   });
 
   describe('Mouse interactions', () => {
     let fixture: ComponentFixture<TestHostComponent>;
     let rowActionDebugElement: DebugElement;
 
-    beforeEach(fakeAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          TestHostComponent,
-          NoopAnimationsModule
-        ]
-      });
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
       fixture = TestBed.createComponent(TestHostComponent);
-      fixture.detectChanges();
-      tick();
-      fixture.detectChanges();
+      await initializeFixture(fixture);
 
       rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
-    }));
+    });
 
-    it('should open on mouseenter on mat-row', fakeAsync(() => {
+    it('should open on mouseenter on mat-row', async () => {
       const component = rowActionDebugElement.componentInstance as RowActionComponent;
       const matRow = fixture.debugElement.query(By.css('mat-row'));
 
       expect(component.open$.getValue()).toBeFalse();
 
       matRow.nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
-      tick();
+      await waitForTimeout();
       fixture.detectChanges();
 
       expect(component.open$.getValue()).toBeTrue();
-      flush();
-    }));
+    });
 
-    it('should close when mouse leaves row bounds', fakeAsync(() => {
+    it('should close when mouse leaves row bounds', async () => {
       const component = rowActionDebugElement.componentInstance as RowActionComponent;
       const matRow = fixture.debugElement.query(By.css('mat-row'));
 
       // Open first
       matRow.nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
-      tick();
+      await waitForTimeout();
       fixture.detectChanges();
       expect(component.open$.getValue()).toBeTrue();
 
@@ -253,114 +251,89 @@ describe('RowActionComponent', () => {
         clientY: -100
       });
       document.dispatchEvent(mouseMoveEvent);
-      tick();
+      await waitForTimeout();
       fixture.detectChanges();
 
       expect(component.open$.getValue()).toBeFalse();
-      flush();
-    }));
+    });
   });
 
   describe('Animation settings', () => {
-    it('should have animation enabled by default', fakeAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          TestHostComponent,
-          NoopAnimationsModule
-        ]
-      });
+    it('should have animation enabled by default', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
       const fixture = TestBed.createComponent(TestHostComponent);
-      fixture.detectChanges();
-      tick();
-      fixture.detectChanges();
+      await initializeFixture(fixture);
 
       const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
       const component = rowActionDebugElement.componentInstance as RowActionComponent;
 
       expect(component.animatedFrom).toBe('right');
-      flush();
-    }));
+    });
 
-    it('should disable animation when animationDisabled is true', fakeAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          TestHostComponent,
-          NoopAnimationsModule
-        ]
-      });
+    it('should disable animation when animationDisabled is true', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
       const fixture = TestBed.createComponent(TestHostComponent);
       fixture.componentInstance.animationDisabled = true;
-      fixture.detectChanges();
-      tick();
-      fixture.detectChanges();
+      await initializeFixture(fixture);
 
       const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
       const component = rowActionDebugElement.componentInstance as RowActionComponent;
 
       expect(component.animatedFrom).toBeNull();
-      flush();
-    }));
+    });
   });
 
   describe('Overlay positioning', () => {
-    it('should have end overlay position for right-positioned component', fakeAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          TestHostComponent,
-          NoopAnimationsModule
-        ]
-      });
+    it('should have end overlay position for right-positioned component', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
       const fixture = TestBed.createComponent(TestHostComponent);
-      fixture.detectChanges();
-      tick();
-      fixture.detectChanges();
+      await initializeFixture(fixture);
 
       const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
       const component = rowActionDebugElement.componentInstance as RowActionComponent;
 
       expect(component.overlayPositions[0].originX).toBe('end');
       expect(component.overlayPositions[0].overlayX).toBe('end');
-      flush();
-    }));
+    });
 
-    it('should have start overlay position for left-positioned component', fakeAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          TestHostLeftComponent,
-          NoopAnimationsModule
-        ]
-      });
+    it('should have start overlay position for left-positioned component', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostLeftComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
       const fixture = TestBed.createComponent(TestHostLeftComponent);
-      fixture.detectChanges();
-      tick();
-      fixture.detectChanges();
+      await initializeFixture(fixture);
 
       const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
       const component = rowActionDebugElement.componentInstance as RowActionComponent;
 
       expect(component.overlayPositions[0].originX).toBe('start');
       expect(component.overlayPositions[0].overlayX).toBe('start');
-      flush();
-    }));
+    });
   });
 
   describe('Cleanup on destroy', () => {
-    it('should complete open$ subject on destroy', fakeAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          TestHostComponent,
-          NoopAnimationsModule
-        ]
-      });
+    it('should complete open$ subject on destroy', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
       const fixture = TestBed.createComponent(TestHostComponent);
-      fixture.detectChanges();
-      tick();
-      fixture.detectChanges();
+      await initializeFixture(fixture);
 
       const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
       const component = rowActionDebugElement.componentInstance as RowActionComponent;
@@ -373,76 +346,61 @@ describe('RowActionComponent', () => {
       fixture.destroy();
 
       expect(completed).toBeTrue();
-      flush();
-    }));
+    });
   });
 
   describe('Content projection', () => {
-    it('should project buttons into toolbar', fakeAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          TestHostComponent,
-          NoopAnimationsModule
-        ]
-      });
+    it('should project buttons into toolbar', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
       const fixture = TestBed.createComponent(TestHostComponent);
-      fixture.detectChanges();
-      tick();
-      fixture.detectChanges();
+      await initializeFixture(fixture);
 
       const matRow = fixture.debugElement.query(By.css('mat-row'));
       matRow.nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
-      tick();
+      await waitForTimeout();
       fixture.detectChanges();
-      tick(300); // Wait for animation
+      await waitForTimeout(300); // Wait for animation
       fixture.detectChanges();
 
       // The button should be projected
       const projectedButton = document.querySelector('.test-button');
       expect(projectedButton).toBeTruthy();
-      flush();
-    }));
+    });
   });
 
   describe('Multiple rows behavior', () => {
-    it('should create row-actions for each row', fakeAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          TestHostMultipleRowsComponent,
-          NoopAnimationsModule
-        ]
-      });
+    it('should create row-actions for each row', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostMultipleRowsComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
       const fixture = TestBed.createComponent(TestHostMultipleRowsComponent);
-      fixture.detectChanges();
-      tick();
-      fixture.detectChanges();
+      await initializeFixture(fixture);
 
       const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionComponent));
       expect(rowActionElements.length).toBe(3);
-      flush();
-    }));
+    });
 
-    it('should only open row-actions for the hovered row', fakeAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          TestHostMultipleRowsComponent,
-          NoopAnimationsModule
-        ]
-      });
+    it('should only open row-actions for the hovered row', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostMultipleRowsComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
       const fixture = TestBed.createComponent(TestHostMultipleRowsComponent);
-      fixture.detectChanges();
-      tick();
-      fixture.detectChanges();
+      await initializeFixture(fixture);
 
       const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionComponent));
       const matRows = fixture.debugElement.queryAll(By.css('mat-row'));
 
       // Hover on the second row
       matRows[1].nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
-      tick();
+      await waitForTimeout();
       fixture.detectChanges();
 
       // Only the second row-actions should be open
@@ -453,28 +411,23 @@ describe('RowActionComponent', () => {
       expect(component0.open$.getValue()).toBeFalse();
       expect(component1.open$.getValue()).toBeTrue();
       expect(component2.open$.getValue()).toBeFalse();
-      flush();
-    }));
+    });
 
-    it('should close previous row-actions when hovering another row', fakeAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          TestHostMultipleRowsComponent,
-          NoopAnimationsModule
-        ]
-      });
+    it('should close previous row-actions when hovering another row', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostMultipleRowsComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
       const fixture = TestBed.createComponent(TestHostMultipleRowsComponent);
-      fixture.detectChanges();
-      tick();
-      fixture.detectChanges();
+      await initializeFixture(fixture);
 
       const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionComponent));
       const matRows = fixture.debugElement.queryAll(By.css('mat-row'));
 
       // Hover on the first row
       matRows[0].nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
-      tick();
+      await waitForTimeout();
       fixture.detectChanges();
 
       const component0 = rowActionElements[0].componentInstance as RowActionComponent;
@@ -489,31 +442,26 @@ describe('RowActionComponent', () => {
         clientY: row1Rect.top + 10
       });
       document.dispatchEvent(mouseMoveToRow1);
-      tick();
+      await waitForTimeout();
 
       // Mouse enters row 1
       matRows[1].nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
-      tick();
+      await waitForTimeout();
       fixture.detectChanges();
 
       expect(component1.open$.getValue()).toBeTrue();
-      flush();
-    }));
+    });
   });
 
   describe('Vertical alignment', () => {
-    it('should set toolbar height to match cell height on hover', fakeAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          TestHostComponent,
-          NoopAnimationsModule
-        ]
-      });
+    it('should set toolbar height to match cell height on hover', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
       const fixture = TestBed.createComponent(TestHostComponent);
-      fixture.detectChanges();
-      tick();
-      fixture.detectChanges();
+      await initializeFixture(fixture);
 
       const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
       const component = rowActionDebugElement.componentInstance as RowActionComponent;
@@ -524,50 +472,40 @@ describe('RowActionComponent', () => {
 
       // Hover to trigger height calculation
       matRow.nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
-      tick();
+      await waitForTimeout();
       fixture.detectChanges();
 
       // Height should be set (value depends on actual cell height in test environment)
       expect(component.heightToolbar).toBeTruthy();
-      flush();
-    }));
+    });
 
-    it('should have top alignment for overlay', fakeAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          TestHostComponent,
-          NoopAnimationsModule
-        ]
-      });
+    it('should have center alignment for overlay', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
       const fixture = TestBed.createComponent(TestHostComponent);
-      fixture.detectChanges();
-      tick();
-      fixture.detectChanges();
+      await initializeFixture(fixture);
 
       const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
       const component = rowActionDebugElement.componentInstance as RowActionComponent;
 
-      // Overlay should be aligned to top
-      expect(component.overlayPositions[0].originY).toBe('top');
-      expect(component.overlayPositions[0].overlayY).toBe('top');
-      flush();
-    }));
+      // Overlay should be aligned to center
+      expect(component.overlayPositions[0].originY).toBe('center');
+      expect(component.overlayPositions[0].overlayY).toBe('center');
+    });
   });
 
   describe('Horizontal alignment', () => {
-    it('should have negative margin-right for right-positioned component', fakeAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          TestHostComponent,
-          NoopAnimationsModule
-        ]
-      });
+    it('should have negative margin-right for right-positioned component', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
       const fixture = TestBed.createComponent(TestHostComponent);
-      fixture.detectChanges();
-      tick();
-      fixture.detectChanges();
+      await initializeFixture(fixture);
 
       const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
       const component = rowActionDebugElement.componentInstance as RowActionComponent;
@@ -576,21 +514,16 @@ describe('RowActionComponent', () => {
       expect(component.flexGrow).toBe(1);
       // marginRight should be negative (to compensate cell padding)
       expect(component.marginRight).toBeLessThanOrEqual(0);
-      flush();
-    }));
+    });
 
-    it('should have negative left offset for left-positioned component', fakeAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          TestHostLeftComponent,
-          NoopAnimationsModule
-        ]
-      });
+    it('should have negative left offset for left-positioned component', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostLeftComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
       const fixture = TestBed.createComponent(TestHostLeftComponent);
-      fixture.detectChanges();
-      tick();
-      fixture.detectChanges();
+      await initializeFixture(fixture);
 
       const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
       const component = rowActionDebugElement.componentInstance as RowActionComponent;
@@ -599,7 +532,6 @@ describe('RowActionComponent', () => {
       expect(component.flexGrow).toBe(0);
       // left should be negative (to compensate cell padding)
       expect(component.left).toBeLessThanOrEqual(0);
-      flush();
-    }));
+    });
   });
 });
