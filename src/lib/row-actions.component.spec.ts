@@ -15,7 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
         <mat-cell *matCellDef="let element">
           {{ element.name }}
           <row-actions [disabled]="disabled" [animationDisabled]="animationDisabled">
-            <button mat-icon-button class="test-button">
+            <button matIconButton class="test-button">
               <mat-icon>edit</mat-icon>
             </button>
           </row-actions>
@@ -47,7 +47,7 @@ class TestHostComponent {
         <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
         <mat-cell *matCellDef="let element">
           <row-actions>
-            <button mat-icon-button class="test-button">
+            <button matIconButton class="test-button">
               <mat-icon>edit</mat-icon>
             </button>
           </row-actions>
@@ -79,7 +79,7 @@ class TestHostLeftComponent {
         <mat-cell *matCellDef="let element">
           {{ element.name }}
           <row-actions>
-            <button mat-icon-button class="test-button">
+            <button matIconButton class="test-button">
               <mat-icon>edit</mat-icon>
             </button>
           </row-actions>

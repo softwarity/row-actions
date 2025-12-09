@@ -2,12 +2,38 @@
 
 ## 3.0.1
 
+### Angular 21 Support
+- **Requires Angular 21+** - Updated all peer dependencies to Angular 21
+- **Zoneless ready** - Compatible with `provideZonelessChangeDetection()`
+
+### Theming
+- **SCSS Mixin** - New `overrides()` mixin for toolbar customization following Angular Material's theming pattern
+- **Usage**:
+  ```scss
+  @use '@hhangular/row-actions/row-actions-theme' as row-actions;
+  @include row-actions.overrides((
+    container-background-color: var(--mat-sys-secondary)
+  ));
+  ```
+
+### Improvements
+- **Material 3 styling** - Pill-shaped border radius on toolbar edges
+- **Native CSS animations** - Replaced `@angular/animations` with native CSS animations (`clip-path`)
+- **Better hover detection** - Fixed issue where toolbar wouldn't appear when moving slowly from row interlines
+
+### Bug Fixes
+- **Mouse detection** - Changed from `mouseenter` to `mousemove` listener for more reliable hover detection
+
+---
+
+## 3.0.0
+
 ### Breaking Changes
-- **Removed `color` input** - The `color` input (`primary`, `accent`, `warn`) has been removed in favor of Material 3 theming via CSS custom properties
-- **Migration**: Replace `[color]="'warn'"` with CSS: `row-actions mat-toolbar { --mat-toolbar-container-background-color: var(--mat-sys-error); --mat-toolbar-container-text-color: var(--mat-sys-on-error); }`
+- **Removed `color` input** - The `color` input (`primary`, `accent`, `warn`) has been removed in favor of Material 3 theming via SCSS mixin
+- **Theming required** - Must call `@include row-actions.overrides()` in your styles
 
 ### Material 3 Support
-- **M3 Design Tokens** - Uses Material 3 toolbar tokens (`--mat-toolbar-container-background-color`, `--mat-toolbar-container-text-color`)
+- **M3 Design Tokens** - Uses Material 3 toolbar tokens via `mat.toolbar-overrides()`
 - **Improved vertical alignment** - Toolbar now uses center positioning for better alignment with table rows
 
 ---

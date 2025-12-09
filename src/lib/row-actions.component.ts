@@ -41,7 +41,7 @@ export class RowActionComponent implements AfterViewInit {
   private readonly cdr = inject(ChangeDetectorRef);
 
   private matRowElement: HTMLElement | null = null;
-  private mouseEnterListener: (() => void) | null = null;
+  private rowMouseMoveListener: (() => void) | null = null;
 
   overlayPositions: ConnectedPosition[] = [{ originY: 'center', originX: 'end', overlayY: 'center', overlayX: 'end' }];
 
@@ -101,26 +101,29 @@ export class RowActionComponent implements AfterViewInit {
       return;
     }
 
-    this.mouseEnterListener = () => {
-      const currentParentStyle = getComputedStyle(parentElement);
-      this.heightToolbar = parseInt(currentParentStyle.height) - 1 + 'px';
-      this.open$.next(true);
-      document.addEventListener('mousemove', this.mouseMoveListener);
+    // Listen to mousemove on the row itself - more reliable than mouseenter
+    this.rowMouseMoveListener = () => {
+      if (!this.open$.value) {
+        const currentParentStyle = getComputedStyle(parentElement);
+        this.heightToolbar = parseInt(currentParentStyle.height) - 1 + 'px';
+        this.open$.next(true);
+        document.addEventListener('mousemove', this.documentMouseMoveListener);
+      }
     };
 
-    this.matRowElement.addEventListener('mouseenter', this.mouseEnterListener);
+    this.matRowElement.addEventListener('mousemove', this.rowMouseMoveListener);
 
     // Cleanup on destroy
     this.destroyRef.onDestroy(() => {
       this.open$.complete();
-      document.removeEventListener('mousemove', this.mouseMoveListener);
-      if (this.matRowElement && this.mouseEnterListener) {
-        this.matRowElement.removeEventListener('mouseenter', this.mouseEnterListener);
+      document.removeEventListener('mousemove', this.documentMouseMoveListener);
+      if (this.matRowElement && this.rowMouseMoveListener) {
+        this.matRowElement.removeEventListener('mousemove', this.rowMouseMoveListener);
       }
     });
   }
 
-  private readonly mouseMoveListener = (event: MouseEvent): void => {
+  private readonly documentMouseMoveListener = (event: MouseEvent): void => {
     if (this.matRowElement) {
       const rect = this.matRowElement.getBoundingClientRect();
       const isInHorizontalBounds = event.clientX >= rect.left && event.clientX <= rect.right;
@@ -130,6 +133,6 @@ export class RowActionComponent implements AfterViewInit {
       }
     }
     this.open$.next(false);
-    document.removeEventListener('mousemove', this.mouseMoveListener);
+    document.removeEventListener('mousemove', this.documentMouseMoveListener);
   };
 }

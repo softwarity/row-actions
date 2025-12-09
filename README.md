@@ -46,11 +46,10 @@ npm install @hhangular/row-actions
 
 | Package | Version |
 |---------|---------|
-| @angular/common | >= 17.0.0 |
-| @angular/core | >= 17.0.0 |
-| @angular/cdk | >= 17.0.0 |
-| @angular/material | >= 17.0.0 |
-| @angular/animations | >= 17.0.0 |
+| @angular/common | >= 21.0.0 |
+| @angular/core | >= 21.0.0 |
+| @angular/cdk | >= 21.0.0 |
+| @angular/material | >= 21.0.0 |
 
 ## Usage
 
@@ -79,10 +78,10 @@ Add the `<row-actions>` component inside a `mat-cell`:
     <mat-cell *matCellDef="let element">
       {{ element.lastUpdated }}
       <row-actions>
-        <button mat-icon-button (click)="edit(element)">
+        <button matIconButton (click)="edit(element)">
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-icon-button (click)="delete(element)">
+        <button matIconButton (click)="delete(element)">
           <mat-icon>delete</mat-icon>
         </button>
       </row-actions>
@@ -113,39 +112,65 @@ You can place `<row-actions>` in **any cell** of your table, not just a dedicate
 
 ## Theming (Material 3)
 
-The component uses Material 3 design tokens for theming. By default, it uses the `primary` color from your theme.
+The component provides a SCSS mixin to customize the toolbar colors. This approach follows Angular Material's theming pattern.
 
-The toolbar uses these CSS custom properties that you can override:
-- `--mat-toolbar-container-background-color` - Background color
-- `--mat-toolbar-container-text-color` - Text/icon color
+### Setup
 
-To customize the colors, override these properties in your styles:
+In your application's `styles.scss`, import the theme file and call the `overrides` mixin:
 
-```css
-/* Use secondary color */
-row-actions mat-toolbar {
-  --mat-toolbar-container-background-color: var(--mat-sys-secondary);
-  --mat-toolbar-container-text-color: var(--mat-sys-on-secondary);
+```scss
+@use '@angular/material' as mat;
+@use '@hhangular/row-actions/row-actions-theme' as row-actions;
+
+// Your Material 3 theme
+html {
+  @include mat.theme((
+    color: (
+      primary: mat.$violet-palette,
+      tertiary: mat.$yellow-palette
+    ),
+    typography: Roboto,
+    density: 0
+  ));
 }
 
-/* Use tertiary color */
-row-actions mat-toolbar {
-  --mat-toolbar-container-background-color: var(--mat-sys-tertiary);
-  --mat-toolbar-container-text-color: var(--mat-sys-on-tertiary);
-}
-
-/* Use error color */
-row-actions mat-toolbar {
-  --mat-toolbar-container-background-color: var(--mat-sys-error);
-  --mat-toolbar-container-text-color: var(--mat-sys-on-error);
-}
-
-/* Custom color */
-row-actions mat-toolbar {
-  --mat-toolbar-container-background-color: #1976d2;
-  --mat-toolbar-container-text-color: white;
-}
+// Row actions theme (required)
+@include row-actions.overrides();
 ```
+
+### Customization
+
+The `overrides` mixin accepts a map of tokens to customize the toolbar appearance:
+
+| Token | Default | Description |
+|-------|---------|-------------|
+| `container-background-color` | `var(--mat-sys-surface-container)` | Toolbar background color |
+
+### Examples
+
+```scss
+// Use Material 3 system colors
+@include row-actions.overrides((
+  container-background-color: var(--mat-sys-secondary)
+));
+
+// Use tertiary color
+@include row-actions.overrides((
+  container-background-color: var(--mat-sys-tertiary)
+));
+
+// Use error color for danger actions
+@include row-actions.overrides((
+  container-background-color: var(--mat-sys-error)
+));
+
+// Custom color
+@include row-actions.overrides((
+  container-background-color: #1976d2
+));
+```
+
+To customize the icon buttons, use Angular Material's `matIconButton` overrides directly.
 
 ## Examples
 
@@ -155,8 +180,8 @@ row-actions mat-toolbar {
 <mat-cell *matCellDef="let element">
   {{ element.name }}
   <row-actions>
-    <button mat-icon-button><mat-icon>edit</mat-icon></button>
-    <button mat-icon-button><mat-icon>delete</mat-icon></button>
+    <button matIconButton><mat-icon>edit</mat-icon></button>
+    <button matIconButton><mat-icon>delete</mat-icon></button>
   </row-actions>
 </mat-cell>
 ```
@@ -166,8 +191,8 @@ row-actions mat-toolbar {
 ```html
 <mat-cell *matCellDef="let element">
   <row-actions>
-    <button mat-icon-button><mat-icon>edit</mat-icon></button>
-    <button mat-icon-button><mat-icon>delete</mat-icon></button>
+    <button matIconButton><mat-icon>edit</mat-icon></button>
+    <button matIconButton><mat-icon>delete</mat-icon></button>
   </row-actions>
   {{ element.name }}
 </mat-cell>
@@ -177,7 +202,7 @@ row-actions mat-toolbar {
 
 ```html
 <row-actions [disabled]="!hasPermission">
-  <button mat-icon-button><mat-icon>edit</mat-icon></button>
+  <button matIconButton><mat-icon>edit</mat-icon></button>
 </row-actions>
 ```
 

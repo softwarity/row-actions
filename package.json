@@ -28,6 +28,12 @@
     "test": "cross-env CHROME_BIN='/usr/bin/google-chrome' ng test",
     "test:ci": "ng test --no-watch --browsers=ChromeHeadless"
   },
+  "peerDependencies": {
+    "@angular/common": ">=21.0.0",
+    "@angular/core": ">=21.0.0",
+    "@angular/cdk": ">=21.0.0",
+    "@angular/material": ">=21.0.0"
+  },
   "dependencies": {
     "tslib": "^2.6.2"
   },

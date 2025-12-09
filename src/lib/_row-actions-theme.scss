@@ -1,0 +1,17 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+/// Available tokens for row-actions
+/// - container-background-color: toolbar background color (default: --mat-sys-surface-container)
+@mixin overrides($tokens: ()) {
+  $defaults: (
+    container-background-color: var(--mat-sys-surface-container)
+  );
+  $merged: map.merge($defaults, $tokens);
+
+  .cdk-overlay-container .row-actions-toolbar {
+    @include mat.toolbar-overrides((
+      container-background-color: map.get($merged, container-background-color)
+    ));
+  }
+}

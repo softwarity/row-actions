@@ -70,10 +70,10 @@ export class AppComponent implements OnInit {
     const attrsStr = attrs.length > 0 ? ' ' + attrs.join(' ') : '';
 
     return `<row-actions${attrsStr}>
-  <button mat-icon-button (click)="edit(element)">
+  <button matIconButton (click)="edit(element)">
     <mat-icon>edit</mat-icon>
   </button>
-  <button mat-icon-button (click)="delete(element)">
+  <button matIconButton (click)="delete(element)">
     <mat-icon>delete</mat-icon>
   </button>
 </row-actions>`;

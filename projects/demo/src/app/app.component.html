@@ -62,7 +62,7 @@
         <span class="control-hint">Disables the toolbar appearance on the Actions column</span>
         <div class="theme-toggle">
           <span class="theme-label">Material 3 {{ isDarkMode ? 'Dark' : 'Light' }}</span>
-          <button mat-icon-button (click)="toggleTheme()" [title]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'">
+          <button matIconButton (click)="toggleTheme()" [title]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'">
             <mat-icon>{{ isDarkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
           </button>
         </div>
@@ -79,7 +79,7 @@
             <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
             <mat-cell *matCellDef="let user">
               <row-actions>
-                <button mat-icon-button (click)="onEdit(user)" title="Edit">
+                <button matIconButton (click)="onEdit(user)" title="Edit">
                   <mat-icon>edit</mat-icon>
                 </button>
               </row-actions>
@@ -92,7 +92,7 @@
             <mat-cell *matCellDef="let user">
               {{ user.email }}
               <row-actions>
-                <button mat-icon-button (click)="onEdit(user)" title="Edit">
+                <button matIconButton (click)="onEdit(user)" title="Edit">
                   <mat-icon>edit</mat-icon>
                 </button>
               </row-actions>
@@ -118,16 +118,16 @@
             <mat-cell *matCellDef="let user">
               {{ user.lastUpdated }}
               <row-actions [disabled]="disabled">
-                <button mat-icon-button (click)="onView(user)" title="View">
+                <button matIconButton (click)="onView(user)" title="View">
                   <mat-icon>visibility</mat-icon>
                 </button>
-                <button mat-icon-button (click)="onEdit(user)" title="Edit">
+                <button matIconButton (click)="onEdit(user)" title="Edit">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button (click)="onDuplicate(user)" title="Duplicate">
+                <button matIconButton (click)="onDuplicate(user)" title="Duplicate">
                   <mat-icon>content_copy</mat-icon>
                 </button>
-                <button mat-icon-button (click)="onDelete(user)" title="Delete">
+                <button matIconButton (click)="onDelete(user)" title="Delete">
                   <mat-icon>delete</mat-icon>
                 </button>
               </row-actions>
@@ -153,10 +153,10 @@
   &lt;mat-header-cell *matHeaderCellDef&gt;Actions&lt;/mat-header-cell&gt;
   &lt;mat-cell *matCellDef="let element"&gt;
     &lt;row-actions&gt;
-      &lt;button mat-icon-button (click)="edit(element)"&gt;
+      &lt;button matIconButton (click)="edit(element)"&gt;
         &lt;mat-icon&gt;edit&lt;/mat-icon&gt;
       &lt;/button&gt;
-      &lt;button mat-icon-button (click)="delete(element)"&gt;
+      &lt;button matIconButton (click)="delete(element)"&gt;
         &lt;mat-icon&gt;delete&lt;/mat-icon&gt;
       &lt;/button&gt;
     &lt;/row-actions&gt;

@@ -1,5 +1,3 @@
-@use '@angular/material' as mat;
-
 /* Host styles */
 row-actions {
   position: relative;
@@ -9,12 +7,6 @@ row-actions {
 row-actions .actions-trigger {
   display: flex;
   flex-grow: 1;
-}
-
-.cdk-overlay-container .row-actions-toolbar {
-  @include mat.toolbar-overrides((
-    container-background-color: var(--mat-sys-surface-container)
-  ));
 }
 
 /* Toolbar styles (rendered in overlay container) */
@@ -31,19 +23,6 @@ row-actions .actions-trigger {
     border-radius: 0 9999px 9999px 0;
   }
 }
-.cdk-overlay-container .row-actions-toolbar [mat-icon-button] {
-  --mat-icon-button-state-layer-size: 36px;
-  --mat-icon-button-icon-size: 18px;
-  width: 36px;
-  height: 36px;
-  padding: 9px;
-}
-.cdk-overlay-container .row-actions-toolbar [mat-icon-button] mat-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-}
-
 /* Native CSS animations - expand from right */
 .cdk-overlay-container .row-actions-toolbar.expand-from-right.enter-animation {
   animation: rowActionsExpandFromRightEnter 300ms ease-out forwards;

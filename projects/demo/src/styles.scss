@@ -1,4 +1,5 @@
 @use '@angular/material' as mat;
+@use '@hhangular/row-actions/row-actions-theme' as row-actions;
 
 // Material 3 Theme
 html {
@@ -16,6 +17,11 @@ html {
 body.dark-mode {
   color-scheme: dark;
 }
+
+
+@include row-actions.overrides((
+  // container-background-color: rgb(21, 0, 255)
+));
 
 // Variables couleurs Softwarity - exactes
 :root {
