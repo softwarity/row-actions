@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { RowActionComponent } from '@hhangular/row-actions';
+import { RowActionComponent } from '@softwarity/row-actions';
 
 
 declare const Prism: any;

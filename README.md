@@ -4,26 +4,26 @@
   </a>
 </p>
 
-# @hhangular/row-actions
+# @softwarity/row-actions
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@hhangular/row-actions">
-    <img src="https://img.shields.io/npm/v/@hhangular/row-actions?color=blue&label=npm" alt="npm version">
+  <a href="https://www.npmjs.com/package/@softwarity/row-actions">
+    <img src="https://img.shields.io/npm/v/@softwarity/row-actions?color=blue&label=npm" alt="npm version">
   </a>
-  <a href="https://github.com/hhangular/row-actions/blob/main/LICENSE">
+  <a href="https://github.com/softwarity/row-actions/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="license">
   </a>
-  <a href="https://github.com/hhangular/row-actions/actions/workflows/main.yml">
-    <img src="https://github.com/hhangular/row-actions/actions/workflows/main.yml/badge.svg" alt="build status">
+  <a href="https://github.com/softwarity/row-actions/actions/workflows/main.yml">
+    <img src="https://github.com/softwarity/row-actions/actions/workflows/main.yml/badge.svg" alt="build status">
   </a>
 </p>
 
 An Angular component that displays a collapsible action toolbar when hovering over a `mat-table` row. The buttons appear with a smooth animation from the edge of the cell.
 
-**[Live Demo](https://hhangular.github.io/row-actions/)** | **[Release Notes](RELEASE_NOTES.md)**
+**[Live Demo](https://softwarity.github.io/row-actions/)** | **[Release Notes](RELEASE_NOTES.md)**
 
 <p align="center">
-  <a href="https://hhangular.github.io/row-actions/">
+  <a href="https://softwarity.github.io/row-actions/">
     <img src="preview.png" alt="Row Actions Preview" width="800">
   </a>
 </p>
@@ -39,7 +39,7 @@ An Angular component that displays a collapsible action toolbar when hovering ov
 ## Installation
 
 ```bash
-npm install @hhangular/row-actions
+npm install @softwarity/row-actions
 ```
 
 ### Peer Dependencies
@@ -56,7 +56,7 @@ npm install @hhangular/row-actions
 Import the standalone component in your component:
 
 ```typescript
-import { RowActionComponent } from '@hhangular/row-actions';
+import { RowActionComponent } from '@softwarity/row-actions';
 
 @Component({
   selector: 'app-my-component',
@@ -120,7 +120,7 @@ In your application's `styles.scss`, import the theme file and call the `overrid
 
 ```scss
 @use '@angular/material' as mat;
-@use '@hhangular/row-actions/row-actions-theme' as row-actions;
+@use '@softwarity/row-actions/row-actions-theme' as row-actions;
 
 // Your Material 3 theme
 html {

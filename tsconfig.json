@@ -18,7 +18,7 @@
     "importHelpers": true,
     "target": "ES2022",
     "paths": {
-      "@hhangular/row-actions": [
+      "@softwarity/row-actions": [
         "dist"
       ]
     },

@@ -10,7 +10,7 @@
 - **SCSS Mixin** - New `overrides()` mixin for toolbar customization following Angular Material's theming pattern
 - **Usage**:
   ```scss
-  @use '@hhangular/row-actions/row-actions-theme' as row-actions;
+  @use '@softwarity/row-actions/row-actions-theme' as row-actions;
   @include row-actions.overrides((
     container-background-color: var(--mat-sys-secondary)
   ));
@@ -67,7 +67,7 @@
 ## 2.0.3
 
 ### New Features
-- **Live Demo** - Interactive demo page deployed on GitHub Pages at [hhangular.github.io/row-actions](https://hhangular.github.io/row-actions/)
+- **Live Demo** - Interactive demo page deployed on GitHub Pages at [softwarity.github.io/row-actions](https://softwarity.github.io/row-actions/)
 - Demo includes real-time configuration options (color, disabled state)
 - Dynamic code preview with syntax highlighting
 
@@ -100,4 +100,4 @@
 
 ## Previous Versions
 
-For older releases, see the [commit history](https://github.com/hhangular/row-actions/commits/main).
+For older releases, see the [commit history](https://github.com/softwarity/row-actions/commits/main).
