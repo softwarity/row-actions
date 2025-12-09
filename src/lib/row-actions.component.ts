@@ -34,8 +34,8 @@ import { BehaviorSubject } from 'rxjs';
     }
     /* Icon button styling - compact size for table rows */
     ::ng-deep mat-toolbar [mat-icon-button] {
-      --mdc-icon-button-state-layer-size: 36px;
-      --mdc-icon-button-icon-size: 18px;
+      --mat-icon-button-state-layer-size: 36px;
+      --mat-icon-button-icon-size: 18px;
       width: 36px;
       height: 36px;
       padding: 9px;
