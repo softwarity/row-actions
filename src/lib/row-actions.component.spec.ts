@@ -15,7 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
         <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
         <mat-cell *matCellDef="let element">
           {{ element.name }}
-          <row-actions [color]="color" [disabled]="disabled" [animationDisabled]="animationDisabled">
+          <row-actions [disabled]="disabled" [animationDisabled]="animationDisabled">
             <button mat-icon-button class="test-button">
               <mat-icon>edit</mat-icon>
             </button>
@@ -36,7 +36,6 @@ import { MatButtonModule } from '@angular/material/button';
 })
 class TestHostComponent {
   dataSource = [{ name: 'Test User' }];
-  color: 'primary' | 'accent' | 'warn' = 'primary';
   disabled = false;
   animationDisabled = false;
 }
@@ -138,19 +137,6 @@ describe('RowActionComponent', () => {
 
     it('should create', () => {
       expect(rowActionDebugElement).toBeTruthy();
-    });
-
-    it('should have default color as primary', () => {
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
-      expect(component.color()).toBe('primary');
-    });
-
-    it('should accept color input', () => {
-      hostComponent.color = 'warn';
-      fixture.detectChanges();
-
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
-      expect(component.color()).toBe('warn');
     });
 
     it('should be hidden when disabled', () => {

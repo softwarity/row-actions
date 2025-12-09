@@ -4,8 +4,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RowActionComponent } from '@hhangular/row-actions';
 
@@ -40,8 +38,6 @@ const USERS_DATA: User[] = [
     MatIconModule,
     MatButtonModule,
     MatSnackBarModule,
-    MatSelectModule,
-    MatFormFieldModule,
     MatCheckboxModule,
     RowActionComponent,
   ],
@@ -53,7 +49,6 @@ export class AppComponent implements AfterViewInit {
   dataSource = USERS_DATA;
 
   // Configuration options
-  color: 'primary' | 'accent' | 'warn' = 'primary';
   disabled = false;
 
   // Highlighted code for display
@@ -68,9 +63,6 @@ export class AppComponent implements AfterViewInit {
 
   get generatedCode(): string {
     const attrs: string[] = [];
-    if (this.color !== 'primary') {
-      attrs.push(`color="${this.color}"`);
-    }
     if (this.disabled) {
       attrs.push('[disabled]="true"');
     }

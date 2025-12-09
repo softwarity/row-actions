@@ -50,15 +50,6 @@
 
       <!-- Controls -->
       <div class="demo-controls">
-        <mat-form-field appearance="outline">
-          <mat-label>Color</mat-label>
-          <mat-select [(ngModel)]="color" (selectionChange)="highlightCode()">
-            <mat-option value="primary">primary</mat-option>
-            <mat-option value="accent">accent</mat-option>
-            <mat-option value="warn">warn</mat-option>
-          </mat-select>
-        </mat-form-field>
-
         <mat-checkbox [(ngModel)]="disabled" (change)="highlightCode()" color="primary">disabled</mat-checkbox>
       </div>
 
@@ -119,7 +110,7 @@
             <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
             <mat-cell *matCellDef="let user">
               {{ user.lastUpdated }}
-              <row-actions [color]="color" [disabled]="disabled">
+              <row-actions [disabled]="disabled">
                 <button mat-icon-button (click)="onView(user)" title="View">
                   <mat-icon>visibility</mat-icon>
                 </button>
@@ -181,12 +172,6 @@
           </thead>
           <tbody>
             <tr>
-              <td><code>color</code></td>
-              <td><code>'primary' | 'accent' | 'warn'</code></td>
-              <td><code>'primary'</code></td>
-              <td>Toolbar color (Angular Material theme)</td>
-            </tr>
-            <tr>
               <td><code>disabled</code></td>
               <td><code>boolean</code></td>
               <td><code>false</code></td>
@@ -201,6 +186,41 @@
           </tbody>
         </table>
       </div>
+    </section>
+
+    <!-- Theming Section -->
+    <section class="section">
+      <h2>Theming (Material 3)</h2>
+      <p>The component uses Material 3 design tokens for theming. By default, it uses the <code>primary</code> color from your theme.</p>
+      <p>The toolbar automatically inherits colors from these CSS custom properties:</p>
+      <ul class="feature-list">
+        <li><code>--mat-sys-primary</code> - Background color</li>
+        <li><code>--mat-sys-on-primary</code> - Text/icon color</li>
+      </ul>
+      <p>To customize the colors, you can override these CSS custom properties in your styles:</p>
+      <pre><code class="language-css">/* Use secondary color */
+row-actions mat-toolbar &#123;
+  background-color: var(--mat-sys-secondary);
+  color: var(--mat-sys-on-secondary);
+&#125;
+
+/* Use tertiary color */
+row-actions mat-toolbar &#123;
+  background-color: var(--mat-sys-tertiary);
+  color: var(--mat-sys-on-tertiary);
+&#125;
+
+/* Use error color */
+row-actions mat-toolbar &#123;
+  background-color: var(--mat-sys-error);
+  color: var(--mat-sys-on-error);
+&#125;
+
+/* Custom color */
+row-actions mat-toolbar &#123;
+  background-color: #1976d2;
+  color: white;
+&#125;</code></pre>
     </section>
 
     <!-- Position Behavior Section -->

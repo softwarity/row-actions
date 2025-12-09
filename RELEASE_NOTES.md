@@ -1,13 +1,32 @@
 # Release Notes
 
+## 3.0.0
+
+### Breaking Changes
+- **Removed `color` input** - The `color` input (`primary`, `accent`, `warn`) has been removed in favor of Material 3 theming via CSS custom properties
+- **Migration**: Replace `[color]="'warn'"` with CSS: `row-actions mat-toolbar { background-color: var(--mat-sys-error); color: var(--mat-sys-on-error); }`
+
+### Material 3 Support
+- **M3 Design Tokens** - Uses Material 3 CSS custom properties for theming (`--mat-sys-primary`, `--mat-sys-on-primary`, etc.)
+- **Improved vertical alignment** - Toolbar now uses center positioning for better alignment with table rows
+
+---
+
 ## 2.0.4
+
+### Breaking Changes
+- **Requires Angular 17+** - Uses Angular signals (`input()`) and `@if` control flow syntax
 
 ### Improvements
 - **Improved animation** - Replaced `scaleX` animation with `clip-path` for smoother reveal effect without content distortion
-- **Code quality** - Migrated to Angular signals (`input()`), added `DestroyRef` for proper cleanup, improved typing
+
+### Code Quality
+- Migrated to Angular signals (`input()`)
+- Added `DestroyRef` for proper cleanup
+- Improved typing throughout
 
 ### Testing
-- **Unit tests** - Added comprehensive test suite with 23 tests covering:
+- **Unit tests** - Comprehensive test suite with 21 tests covering:
   - Row-actions display on hover
   - Position detection (left/right)
   - Vertical and horizontal alignment

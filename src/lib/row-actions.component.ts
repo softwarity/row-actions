@@ -1,10 +1,9 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { AsyncPipe } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, HostBinding, inject, input } from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { BehaviorSubject } from 'rxjs';
-import { ThemePalette } from '@angular/material/core';
 
 @Component({
   selector: 'row-actions',
@@ -13,7 +12,7 @@ import { ThemePalette } from '@angular/material/core';
     @if (!disabled()) {
       <span class="actions-trigger" cdkOverlayOrigin #trigger="cdkOverlayOrigin"></span>
       <ng-template cdkConnectedOverlay [cdkConnectedOverlayPositions]="overlayPositions" [cdkConnectedOverlayOrigin]="trigger" [cdkConnectedOverlayOpen]="!!(open$ | async)">
-        <mat-toolbar [style.height]="heightToolbar" [style.min-height]="heightToolbar" [style.max-height]="heightToolbar" [color]="color()" [@expandFromRight]="animatedFrom" [@expandFromLeft]="animatedFrom">
+        <mat-toolbar [style.height]="heightToolbar" [style.min-height]="heightToolbar" [style.max-height]="heightToolbar" [@expandFromRight]="animatedFrom" [@expandFromLeft]="animatedFrom">
           <ng-content></ng-content>
         </mat-toolbar>
       </ng-template>
@@ -23,7 +22,6 @@ import { ThemePalette } from '@angular/material/core';
     :host {
       position: relative;
       height: 100%;
-      margin-top: -2px;
       display: flex;
     }
     .actions-trigger {
@@ -32,17 +30,28 @@ import { ThemePalette } from '@angular/material/core';
     }
     mat-toolbar {
       gap: 0.5em;
+      /* Reset default mat-toolbar padding for compact display */
+      padding: 0 8px;
+      /* Material 3 theming - uses primary color by default */
+      background-color: var(--mat-sys-primary, var(--mat-toolbar-container-background-color, #673ab7));
+      color: var(--mat-sys-on-primary, var(--mat-toolbar-container-text-color, white));
     }
-    ::ng-deep *[mat-icon-button] {
-      width: 36px !important;
-      line-height: 18px !important;
-      height: 36px !important;
-      padding: 9px !important;
+    /* Icon button styling - compact size for table rows */
+    ::ng-deep mat-toolbar [mat-icon-button] {
+      --mdc-icon-button-state-layer-size: 36px;
+      --mdc-icon-button-icon-size: 18px;
+      width: 36px;
+      height: 36px;
+      padding: 9px;
     }
-    ::ng-deep *[mat-icon-button] mat-icon {
-      font-size: 18px !important;
-      width: 18px !important;
-      height: 18px !important;
+    ::ng-deep mat-toolbar [mat-icon-button] mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+    /* Inherit color for icon buttons from toolbar */
+    ::ng-deep mat-toolbar [mat-icon-button] {
+      color: inherit;
     }
   `],
   imports: [
@@ -75,7 +84,7 @@ export class RowActionComponent implements AfterViewInit {
   private matRowElement: HTMLElement | null = null;
   private mouseEnterListener: (() => void) | null = null;
 
-  overlayPositions: ConnectedPosition[] = [{ originY: 'top', originX: 'end', overlayY: 'top', overlayX: 'end' }];
+  overlayPositions: ConnectedPosition[] = [{ originY: 'center', originX: 'end', overlayY: 'center', overlayX: 'end' }];
 
   open$ = new BehaviorSubject<boolean>(false);
 
@@ -86,8 +95,6 @@ export class RowActionComponent implements AfterViewInit {
   readonly animationDisabled = input<boolean>(false);
 
   animatedFrom: 'left' | 'right' | null = null;
-
-  readonly color = input<ThemePalette>('primary');
 
   readonly disabled = input<boolean | null>(false);
 
@@ -114,11 +121,11 @@ export class RowActionComponent implements AfterViewInit {
       this.animatedFrom = this.position;
 
       if (this.position === 'left') {
-        this.overlayPositions = [{ originY: 'top', originX: 'start', overlayY: 'top', overlayX: 'start' }];
+        this.overlayPositions = [{ originY: 'center', originX: 'start', overlayY: 'center', overlayX: 'start' }];
         this.flexGrow = 0;
         this.left = -parseFloat(parentStyle.paddingLeft);
       } else {
-        this.overlayPositions = [{ originY: 'top', originX: 'end', overlayY: 'top', overlayX: 'end' }];
+        this.overlayPositions = [{ originY: 'center', originX: 'end', overlayY: 'center', overlayX: 'end' }];
         this.flexGrow = 1;
         this.marginRight = -parseFloat(parentStyle.paddingRight);
       }

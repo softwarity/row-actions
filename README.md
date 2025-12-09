@@ -32,7 +32,7 @@ An Angular component that displays a collapsible action toolbar when hovering ov
 
 - **Collapsible Toolbar** - Action buttons appear on row hover with smooth animation
 - **Flexible Positioning** - Toolbar can appear from left or right depending on placement
-- **Angular Material Integration** - Uses `mat-toolbar` with theme support (primary, accent, warn)
+- **Material 3 Ready** - Uses M3 design tokens for theming (`--mat-sys-primary`, etc.)
 - **Standalone Component** - Easy to import in any Angular 17+ application
 - **Lightweight** - No additional dependencies beyond Angular Material
 
@@ -100,7 +100,6 @@ Add the `<row-actions>` component inside a `mat-cell`:
 
 | Input | Type | Default | Description |
 |-------|------|---------|-------------|
-| `color` | `'primary' \| 'accent' \| 'warn'` | `'primary'` | Toolbar color (Angular Material theme) |
 | `disabled` | `boolean` | `false` | Disables the component (hides it completely) |
 | `animationDisabled` | `boolean` | `false` | Disables the expansion animation (set at initialization only) |
 
@@ -111,6 +110,42 @@ The toolbar automatically detects its position within the cell and animates acco
 - **Last child** in cell → Toolbar appears from the **right**
 
 You can place `<row-actions>` in **any cell** of your table, not just a dedicated "actions" column. This allows you to add contextual actions to specific data columns.
+
+## Theming (Material 3)
+
+The component uses Material 3 design tokens for theming. By default, it uses the `primary` color from your theme.
+
+The toolbar automatically inherits colors from these CSS custom properties:
+- `--mat-sys-primary` - Background color
+- `--mat-sys-on-primary` - Text/icon color
+
+To customize the colors, override these properties in your styles:
+
+```css
+/* Use secondary color */
+row-actions mat-toolbar {
+  background-color: var(--mat-sys-secondary);
+  color: var(--mat-sys-on-secondary);
+}
+
+/* Use tertiary color */
+row-actions mat-toolbar {
+  background-color: var(--mat-sys-tertiary);
+  color: var(--mat-sys-on-tertiary);
+}
+
+/* Use error color */
+row-actions mat-toolbar {
+  background-color: var(--mat-sys-error);
+  color: var(--mat-sys-on-error);
+}
+
+/* Custom color */
+row-actions mat-toolbar {
+  background-color: #1976d2;
+  color: white;
+}
+```
 
 ## Examples
 
@@ -136,14 +171,6 @@ You can place `<row-actions>` in **any cell** of your table, not just a dedicate
   </row-actions>
   {{ element.name }}
 </mat-cell>
-```
-
-### With Custom Color
-
-```html
-<row-actions color="warn">
-  <button mat-icon-button><mat-icon>delete</mat-icon></button>
-</row-actions>
 ```
 
 ### Conditionally Disabled
