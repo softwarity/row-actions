@@ -222,14 +222,14 @@ describe('RowActionComponent', () => {
       rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
     });
 
-    it('should open on mouseenter on mat-row', async () => {
+    it('should open on mousemove on mat-row', async () => {
       const component = rowActionDebugElement.componentInstance as RowActionComponent;
       const matRow = fixture.debugElement.query(By.css('mat-row'));
 
       expect(component.open$.getValue()).toBeFalse();
 
-      matRow.nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
-      await waitForTimeout();
+      matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(100); // Wait for OPEN_DELAY (50ms) + buffer
       fixture.detectChanges();
 
       expect(component.open$.getValue()).toBeTrue();
@@ -240,8 +240,8 @@ describe('RowActionComponent', () => {
       const matRow = fixture.debugElement.query(By.css('mat-row'));
 
       // Open first
-      matRow.nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
-      await waitForTimeout();
+      matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(100); // Wait for OPEN_DELAY
       fixture.detectChanges();
       expect(component.open$.getValue()).toBeTrue();
 
@@ -251,7 +251,7 @@ describe('RowActionComponent', () => {
         clientY: -100
       });
       document.dispatchEvent(mouseMoveEvent);
-      await waitForTimeout();
+      await waitForTimeout(100); // Wait for CLOSE_DELAY
       fixture.detectChanges();
 
       expect(component.open$.getValue()).toBeFalse();
@@ -360,8 +360,8 @@ describe('RowActionComponent', () => {
       await initializeFixture(fixture);
 
       const matRow = fixture.debugElement.query(By.css('mat-row'));
-      matRow.nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
-      await waitForTimeout();
+      matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(100); // Wait for OPEN_DELAY
       fixture.detectChanges();
       await waitForTimeout(300); // Wait for animation
       fixture.detectChanges();
@@ -399,8 +399,8 @@ describe('RowActionComponent', () => {
       const matRows = fixture.debugElement.queryAll(By.css('mat-row'));
 
       // Hover on the second row
-      matRows[1].nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
-      await waitForTimeout();
+      matRows[1].nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(100); // Wait for OPEN_DELAY
       fixture.detectChanges();
 
       // Only the second row-actions should be open
@@ -426,8 +426,8 @@ describe('RowActionComponent', () => {
       const matRows = fixture.debugElement.queryAll(By.css('mat-row'));
 
       // Hover on the first row
-      matRows[0].nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
-      await waitForTimeout();
+      matRows[0].nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(100); // Wait for OPEN_DELAY
       fixture.detectChanges();
 
       const component0 = rowActionElements[0].componentInstance as RowActionComponent;
@@ -435,20 +435,12 @@ describe('RowActionComponent', () => {
 
       expect(component0.open$.getValue()).toBeTrue();
 
-      // Now hover on the second row (simulating mouse move to row 2)
-      const row1Rect = matRows[1].nativeElement.getBoundingClientRect();
-      const mouseMoveToRow1 = new MouseEvent('mousemove', {
-        clientX: row1Rect.left + 10,
-        clientY: row1Rect.top + 10
-      });
-      document.dispatchEvent(mouseMoveToRow1);
-      await waitForTimeout();
-
-      // Mouse enters row 1
-      matRows[1].nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
-      await waitForTimeout();
+      // Now hover on the second row - this should cancel row 0 and open row 1
+      matRows[1].nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(100); // Wait for OPEN_DELAY
       fixture.detectChanges();
 
+      expect(component0.open$.getValue()).toBeFalse();
       expect(component1.open$.getValue()).toBeTrue();
     });
   });
@@ -471,8 +463,8 @@ describe('RowActionComponent', () => {
       expect(component.heightToolbar).toBe('48px');
 
       // Hover to trigger height calculation
-      matRow.nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
-      await waitForTimeout();
+      matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(100); // Wait for OPEN_DELAY
       fixture.detectChanges();
 
       // Height should be set (value depends on actual cell height in test environment)
@@ -494,6 +486,154 @@ describe('RowActionComponent', () => {
       // Overlay should be aligned to center
       expect(component.overlayPositions[0].originY).toBe('center');
       expect(component.overlayPositions[0].overlayY).toBe('center');
+    });
+  });
+
+  describe('Debounce behavior', () => {
+    it('should not open immediately on mousemove', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
+
+      const fixture = TestBed.createComponent(TestHostComponent);
+      await initializeFixture(fixture);
+
+      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
+      const component = rowActionDebugElement.componentInstance as RowActionComponent;
+      const matRow = fixture.debugElement.query(By.css('mat-row'));
+
+      matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      // Check immediately - should NOT be open yet
+      expect(component.open$.getValue()).toBeFalse();
+
+      // Wait for debounce
+      await waitForTimeout(100);
+      fixture.detectChanges();
+      expect(component.open$.getValue()).toBeTrue();
+    });
+
+    it('should cancel open if entering another row before delay', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostMultipleRowsComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
+
+      const fixture = TestBed.createComponent(TestHostMultipleRowsComponent);
+      await initializeFixture(fixture);
+
+      const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionComponent));
+      const matRows = fixture.debugElement.queryAll(By.css('mat-row'));
+
+      const component0 = rowActionElements[0].componentInstance as RowActionComponent;
+
+      // Start hover on row 0
+      matRows[0].nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(10); // Less than OPEN_DELAY
+
+      // Move to row 1 before row 0 opens - this cancels row 0's pending open
+      matRows[1].nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(100);
+      fixture.detectChanges();
+
+      // Row 0 should never have opened
+      expect(component0.open$.getValue()).toBeFalse();
+    });
+
+    it('should cancel pending close if mouse re-enters row', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
+
+      const fixture = TestBed.createComponent(TestHostComponent);
+      await initializeFixture(fixture);
+
+      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
+      const component = rowActionDebugElement.componentInstance as RowActionComponent;
+      const matRow = fixture.debugElement.query(By.css('mat-row'));
+
+      // Open toolbar
+      matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(100);
+      fixture.detectChanges();
+      expect(component.open$.getValue()).toBeTrue();
+
+      // Start leaving (triggers close timeout)
+      document.dispatchEvent(new MouseEvent('mousemove', { clientX: -100, clientY: -100 }));
+      await waitForTimeout(10); // Less than CLOSE_DELAY
+
+      // Re-enter row before close completes
+      matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(100);
+      fixture.detectChanges();
+
+      // Should still be open
+      expect(component.open$.getValue()).toBeTrue();
+    });
+  });
+
+  describe('Instance management', () => {
+    it('should cancel pending opens on other rows when entering a new row', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostMultipleRowsComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
+
+      const fixture = TestBed.createComponent(TestHostMultipleRowsComponent);
+      await initializeFixture(fixture);
+
+      const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionComponent));
+      const matRows = fixture.debugElement.queryAll(By.css('mat-row'));
+
+      const component0 = rowActionElements[0].componentInstance as RowActionComponent;
+      const component1 = rowActionElements[1].componentInstance as RowActionComponent;
+
+      // Start hover on row 0
+      matRows[0].nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(10); // Not enough time to open
+
+      // Move to row 1 before row 0 opens
+      matRows[1].nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(100);
+      fixture.detectChanges();
+
+      // Row 0 should never have opened, row 1 should be open
+      expect(component0.open$.getValue()).toBeFalse();
+      expect(component1.open$.getValue()).toBeTrue();
+    });
+
+    it('should immediately close other rows when opening a new one', async () => {
+      await TestBed.configureTestingModule({
+        imports: [TestHostMultipleRowsComponent],
+        providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
+
+      const fixture = TestBed.createComponent(TestHostMultipleRowsComponent);
+      await initializeFixture(fixture);
+
+      const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionComponent));
+      const matRows = fixture.debugElement.queryAll(By.css('mat-row'));
+
+      const component0 = rowActionElements[0].componentInstance as RowActionComponent;
+      const component1 = rowActionElements[1].componentInstance as RowActionComponent;
+
+      // Open row 0
+      matRows[0].nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(100);
+      fixture.detectChanges();
+      expect(component0.open$.getValue()).toBeTrue();
+
+      // Move to row 1 - row 0 should close immediately
+      matRows[1].nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      fixture.detectChanges();
+
+      // Row 0 should be closed immediately (no debounce for cross-row close)
+      expect(component0.open$.getValue()).toBeFalse();
+
+      await waitForTimeout(100);
+      fixture.detectChanges();
+      expect(component1.open$.getValue()).toBeTrue();
     });
   });
 
