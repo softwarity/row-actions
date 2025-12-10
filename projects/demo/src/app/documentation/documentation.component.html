@@ -1,0 +1,147 @@
+<section class="documentation">
+  <h2>Documentation</h2>
+
+  <!-- Installation -->
+  <article class="doc-section">
+    <h3>Installation</h3>
+    <pre><code class="language-bash">npm install &#64;softwarity/row-actions</code></pre>
+  </article>
+
+  <!-- Usage -->
+  <article class="doc-section">
+    <h3>Usage</h3>
+    <pre><code class="language-html">&lt;ng-container matColumnDef="actions"&gt;
+  &lt;mat-header-cell *matHeaderCellDef&gt;Actions&lt;/mat-header-cell&gt;
+  &lt;mat-cell *matCellDef="let element"&gt;
+    &lt;row-actions&gt;
+      &lt;button matIconButton (click)="edit(element)"&gt;
+        &lt;mat-icon&gt;edit&lt;/mat-icon&gt;
+      &lt;/button&gt;
+      &lt;button matIconButton (click)="delete(element)"&gt;
+        &lt;mat-icon&gt;delete&lt;/mat-icon&gt;
+      &lt;/button&gt;
+    &lt;/row-actions&gt;
+  &lt;/mat-cell&gt;
+&lt;/ng-container&gt;</code></pre>
+  </article>
+
+  <!-- API -->
+  <article class="doc-section">
+    <h3>API</h3>
+    <div class="api-table-wrapper">
+      <table class="api-table">
+        <thead>
+          <tr>
+            <th>Input</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>disabled</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>Disables the component (hides it completely)</td>
+          </tr>
+          <tr>
+            <td><code>animationDisabled</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>Disables the expansion animation (set at initialization only)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <!-- Theming -->
+  <article class="doc-section">
+    <h3>Theming (Material 3)</h3>
+    <p>The component provides a SCSS mixin to customize the toolbar colors. This approach follows Angular Material's theming pattern.</p>
+    <p>In your application's <code>styles.scss</code>, import the theme file and call the <code>overrides</code> mixin:</p>
+    <pre><code class="language-scss">&#64;use '&#64;angular/material' as mat;
+&#64;use '&#64;softwarity/row-actions/row-actions-theme' as row-actions;
+
+// Your Material 3 theme
+html &#123;
+  &#64;include mat.theme((
+    color: (
+      primary: mat.$violet-palette,
+      tertiary: mat.$yellow-palette
+    ),
+    typography: Roboto,
+    density: 0
+  ));
+&#125;
+
+// Row actions theme (required)
+&#64;include row-actions.overrides();</code></pre>
+
+    <h4>Customization</h4>
+    <p>The <code>overrides</code> mixin accepts a map of tokens to customize the toolbar appearance:</p>
+    <div class="api-table-wrapper">
+      <table class="api-table">
+        <thead>
+          <tr>
+            <th>Token</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>container-background-color</code></td>
+            <td><code>var(--mat-sys-surface-container)</code></td>
+            <td>Toolbar background color</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Examples</h4>
+    <pre><code class="language-scss">// Use Material 3 system colors
+&#64;include row-actions.overrides((
+  container-background-color: var(--mat-sys-secondary)
+));
+
+// Use tertiary color
+&#64;include row-actions.overrides((
+  container-background-color: var(--mat-sys-tertiary)
+));
+
+// Use error color for danger actions
+&#64;include row-actions.overrides((
+  container-background-color: var(--mat-sys-error)
+));
+
+// Custom color
+&#64;include row-actions.overrides((
+  container-background-color: #1976d2
+));</code></pre>
+    <p>To customize the icon buttons, use Angular Material's <code>matIconButton</code> overrides directly.</p>
+  </article>
+
+  <!-- Position Behavior -->
+  <article class="doc-section">
+    <h3>Position Behavior</h3>
+    <p>The toolbar automatically detects its position within the cell and animates accordingly:</p>
+    <ul class="feature-list">
+      <li><strong>First child</strong> in cell → Toolbar appears from the <strong>left</strong></li>
+      <li><strong>Last child</strong> in cell → Toolbar appears from the <strong>right</strong></li>
+    </ul>
+    <p>You can place <code>&lt;row-actions&gt;</code> in any cell of your table, not just a dedicated "actions" column. This allows you to add contextual actions to specific data columns.</p>
+    <pre><code ngNonBindable class="language-html">&lt;!-- Toolbar from LEFT --&gt;
+&lt;mat-cell *matCellDef="let element"&gt;
+  &lt;row-actions&gt;...&lt;/row-actions&gt;
+  &#123;&#123; element.name &#125;&#125;
+&lt;/mat-cell&gt;
+
+&lt;!-- Toolbar from RIGHT --&gt;
+&lt;mat-cell *matCellDef="let element"&gt;
+  &#123;&#123; element.name &#125;&#125;
+  &lt;row-actions&gt;...&lt;/row-actions&gt;
+&lt;/mat-cell&gt;</code></pre>
+  </article>
+</section>

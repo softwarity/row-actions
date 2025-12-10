@@ -1,0 +1,60 @@
+@use '@angular/material' as mat;
+
+.playground {
+  margin-bottom: 32px;
+  background: transparent;
+}
+
+// Generated Code
+.generated-code {
+  margin-bottom: 16px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.demo-table-wrapper {
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  overflow: hidden;
+}
+
+// Badges
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &[data-role="admin"] {
+    background-color: rgba(163, 113, 247, 0.2);
+    color: var(--accent-purple);
+  }
+
+  &[data-role="editor"] {
+    background-color: rgba(88, 166, 255, 0.2);
+    color: var(--accent-blue);
+  }
+
+  &[data-role="user"] {
+    background-color: rgba(139, 148, 158, 0.2);
+    color: var(--text-muted);
+  }
+
+  &[data-status="active"] {
+    background-color: rgba(35, 134, 54, 0.2);
+    color: var(--accent-green);
+  }
+
+  &[data-status="inactive"] {
+    background-color: rgba(248, 81, 73, 0.2);
+    color: var(--accent-red);
+  }
+
+  &[data-status="pending"] {
+    background-color: rgba(255, 166, 87, 0.2);
+    color: #ffa657;
+  }
+}

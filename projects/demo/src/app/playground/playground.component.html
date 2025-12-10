@@ -1,0 +1,94 @@
+<section class="playground">
+  <h2>Playground</h2>
+
+  <!-- Generated Code -->
+  <div class="generated-code">
+    <pre><code class="language-html" [innerHTML]="highlightedCode"></code></pre>
+  </div>
+
+  <!-- Demo Table with Controls Toolbar -->
+  <div class="demo-table-wrapper">
+    <mat-toolbar>
+      <mat-checkbox [field]="configForm.disabled">disabled</mat-checkbox>
+      <span class="spacer"></span>
+      @if (isDarkMode()) {
+        <button matIconButton (click)="toggleTheme()" title="Switch to light mode">
+          <mat-icon>light_mode</mat-icon>
+        </button>
+      } @else {
+        <button matIconButton (click)="toggleTheme()" title="Switch to dark mode">
+          <mat-icon>dark_mode</mat-icon>
+        </button>
+      }
+    </mat-toolbar>
+    <mat-divider></mat-divider>
+    <mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+        <mat-cell *matCellDef="let user">{{ user.id }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+        <mat-cell *matCellDef="let user">
+          <row-actions>
+            <button matIconButton (click)="onEdit(user)" title="Edit">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </row-actions>
+          {{ user.name }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <mat-header-cell *matHeaderCellDef>Email</mat-header-cell>
+        <mat-cell *matCellDef="let user">
+          {{ user.email }}
+          <row-actions>
+            <button matIconButton (click)="onEdit(user)" title="Edit">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </row-actions>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="role">
+        <mat-header-cell *matHeaderCellDef>Role</mat-header-cell>
+        <mat-cell *matCellDef="let user">
+          <span class="badge" [attr.data-role]="user.role.toLowerCase()">{{ user.role }}</span>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+        <mat-cell *matCellDef="let user">
+          <span class="badge" [attr.data-status]="user.status.toLowerCase()">{{ user.status }}</span>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+        <mat-cell *matCellDef="let user">
+          {{ user.lastUpdated }}
+          <row-actions [disabled]="configForm.disabled().value()">
+            <button matIconButton (click)="onView(user)" title="View">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button matIconButton (click)="onEdit(user)" title="Edit">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button matIconButton (click)="onDuplicate(user)" title="Duplicate">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+            <button matIconButton (click)="onDelete(user)" title="Delete">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </row-actions>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+  </div>
+</section>
