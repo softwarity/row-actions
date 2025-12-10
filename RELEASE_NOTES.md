@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.0.4
+
+---
+
 ## 3.0.3
 
 ### Breaking Changes
