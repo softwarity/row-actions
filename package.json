@@ -6,7 +6,7 @@
   "description": "Angular Material table row actions component with collapsible toolbar",
   "repository": {
     "type": "git",
-    "url": "https://github.com/softwarity/row-actions.git"
+    "url": "git+https://github.com/softwarity/row-actions.git"
   },
   "publishConfig": {
     "access": "public"
