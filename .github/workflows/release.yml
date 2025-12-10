@@ -8,14 +8,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PAT_TOKEN }} # Ceci est necessaire car l'utilisateur par default du workflow, ne DECLENCHE PAS les actions
+          token: ${{ secrets.PAT_TOKEN }}
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
       - run: git config user.name "$GITHUB_ACTOR"
       - run: git config user.email ""
-      - run: npm version patch
-      - run: git push --all
-      - run: git push --tags
-      
-        
+      - name: Version, prepare next release notes, and push
+        run: |
+          npm version patch
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+          NEXT_VERSION="$MAJOR.$MINOR.$((PATCH + 1))"
+          sed -i "s/^# Release Notes$/# Release Notes\n\n## $NEXT_VERSION\n\n---/" RELEASE_NOTES.md
+          git add RELEASE_NOTES.md
+          git commit --amend --no-edit
+          git push --all
+          git push --tags
+
