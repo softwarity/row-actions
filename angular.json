@@ -18,7 +18,7 @@
             "polyfills": [],
             "tsConfig": "projects/demo/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": [],
+            "assets": ["projects/demo/src/assets"],
             "styles": ["projects/demo/src/styles.scss"],
             "scripts": []
           },
