@@ -1,5 +1,4 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
-import { Field, form } from '@angular/forms/signals';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,7 +6,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
-import { RowActionComponent } from '@softwarity/row-actions';
+import { RowActionsDirective } from '@softwarity/row-actions';
 import { MatDividerModule } from '@angular/material/divider';
 
 const PALETTES = [
@@ -41,7 +40,6 @@ const USERS_DATA: User[] = [
   selector: 'app-playground',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    Field,
     MatTableModule,
     MatToolbarModule,
     MatIconModule,
@@ -50,7 +48,7 @@ const USERS_DATA: User[] = [
     MatDividerModule,
     MatCheckboxModule,
     MatSelectModule,
-    RowActionComponent,
+    RowActionsDirective,
   ],
   templateUrl: './playground.component.html',
   styleUrl: './playground.component.scss'
@@ -61,9 +59,9 @@ export class PlaygroundComponent implements AfterViewInit {
   displayedColumns: string[] = ['id', 'name', 'email', 'role', 'status', 'actions'];
   dataSource = USERS_DATA;
 
-  // Configuration options with Signal Forms
-  protected configModel = signal({ disabled: false, customBackground: false });
-  protected configForm = form(this.configModel);
+  // Disabled state for each rowActions (left and right)
+  protected leftDisabled = signal(false);
+  protected rightDisabled = signal(false);
 
   protected isDarkMode = signal(document.body.classList.contains('dark-mode'));
 
@@ -71,9 +69,13 @@ export class PlaygroundComponent implements AfterViewInit {
   protected palettes = PALETTES;
   protected selectedPalette = signal<string>('');
 
-  // Custom background colors
-  protected lightColor = signal('#e8def8');
-  protected darkColor = signal('#4a4458');
+  // Override configurations for each variant (distinct colors, unchecked by default)
+  protected containerOverride = signal({ enabled: false, light: '#ff6b6b', dark: '#8b0000' }); // Red tones
+  protected filledOverride = signal({ enabled: false, light: '#4ecdc4', dark: '#006666' });    // Cyan tones
+  protected tonalOverride = signal({ enabled: false, light: '#ffe66d', dark: '#806600' });     // Yellow tones
+
+  // Variant selection for interactive HTML
+  protected selectedVariant = signal<'' | 'filled' | 'tonal'>('');
 
   // Highlighted code for display
   highlightedCode = '';
@@ -82,10 +84,11 @@ export class PlaygroundComponent implements AfterViewInit {
   constructor() {
     // React to config changes to update highlighted code
     effect(() => {
-      this.configForm.disabled().value();
-      this.configForm.customBackground().value();
-      this.lightColor();
-      this.darkColor();
+      this.leftDisabled();
+      this.rightDisabled();
+      this.containerOverride();
+      this.filledOverride();
+      this.tonalOverride();
       this.selectedPalette();
       this.highlightCode();
       this.updateCustomBackground();
@@ -97,20 +100,14 @@ export class PlaygroundComponent implements AfterViewInit {
   }
 
   protected get generatedCode(): string {
-    const attrs: string[] = [];
-    if (this.configForm.disabled().value()) {
-      attrs.push('[disabled]="true"');
-    }
-    const attrsStr = attrs.length > 0 ? ' ' + attrs.join(' ') : '';
-
-    return `<row-actions${attrsStr}>
+    return `<span rowActions>
   <button matIconButton (click)="edit(element)">
     <mat-icon>edit</mat-icon>
   </button>
   <button matIconButton (click)="delete(element)">
     <mat-icon>delete</mat-icon>
   </button>
-</row-actions>`;
+</span>`;
   }
 
   highlightCode(): void {
@@ -119,11 +116,23 @@ export class PlaygroundComponent implements AfterViewInit {
   }
 
   protected get generatedScssCode(): string {
-    const isCustomActive = this.configForm.customBackground().value();
-    const lightVal = isCustomActive ? this.lightColor() : '#e8def8';
-    const darkVal = isCustomActive ? this.darkColor() : '#4a4458';
-    const customComment = isCustomActive ? '' : '// ';
     const palette = this.selectedPalette() || 'violet';
+    const container = this.containerOverride();
+    const filled = this.filledOverride();
+    const tonal = this.tonalOverride();
+
+    const lines: string[] = [];
+    if (container.enabled) {
+      lines.push(`    container-background-color: light-dark(${container.light}, ${container.dark})`);
+    }
+    if (filled.enabled) {
+      lines.push(`    filled-background-color: light-dark(${filled.light}, ${filled.dark})`);
+    }
+    if (tonal.enabled) {
+      lines.push(`    tonal-background-color: light-dark(${tonal.light}, ${tonal.dark})`);
+    }
+
+    const overrideContent = lines.length > 0 ? lines.join(',\n') : '    // No overrides';
 
     return `// In styles.scss
 @use '@angular/material' as mat;
@@ -138,7 +147,7 @@ html {
   }
 
   @include row-actions.overrides((
-${customComment}    container-background-color: light-dark(${lightVal}, ${darkVal})
+${overrideContent}
   ));
 }`;
   }
@@ -146,28 +155,51 @@ ${customComment}    container-background-color: light-dark(${lightVal}, ${darkVa
   private styleElement: HTMLStyleElement | null = null;
 
   updateCustomBackground(): void {
-    if (this.configForm.customBackground().value()) {
+    const container = this.containerOverride();
+    const filled = this.filledOverride();
+    const tonal = this.tonalOverride();
+
+    const hasAnyOverride = container.enabled || filled.enabled || tonal.enabled;
+
+    if (hasAnyOverride) {
       if (!this.styleElement) {
         this.styleElement = document.createElement('style');
         document.head.appendChild(this.styleElement);
       }
-      this.styleElement.textContent = `
-        .cdk-overlay-container .row-actions-toolbar.mat-toolbar {
-          --mat-toolbar-container-background-color: light-dark(${this.lightColor()}, ${this.darkColor()}) !important;
-        }
-      `;
+      const lines: string[] = [];
+      if (container.enabled) {
+        lines.push(`--row-actions-background: light-dark(${container.light}, ${container.dark});`);
+      }
+      if (filled.enabled) {
+        lines.push(`--row-actions-filled-background: light-dark(${filled.light}, ${filled.dark});`);
+      }
+      if (tonal.enabled) {
+        lines.push(`--row-actions-tonal-background: light-dark(${tonal.light}, ${tonal.dark});`);
+      }
+      this.styleElement.textContent = `:root { ${lines.join(' ')} }`;
     } else if (this.styleElement) {
       this.styleElement.remove();
       this.styleElement = null;
     }
   }
 
-  onLightColorChange(event: Event): void {
-    this.lightColor.set((event.target as HTMLInputElement).value);
+  toggleOverride(variant: 'container' | 'filled' | 'tonal'): void {
+    const signalMap = {
+      container: this.containerOverride,
+      filled: this.filledOverride,
+      tonal: this.tonalOverride
+    };
+    signalMap[variant].update(v => ({ ...v, enabled: !v.enabled }));
   }
 
-  onDarkColorChange(event: Event): void {
-    this.darkColor.set((event.target as HTMLInputElement).value);
+  updateOverrideColor(variant: 'container' | 'filled' | 'tonal', mode: 'light' | 'dark', event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    const signalMap = {
+      container: this.containerOverride,
+      filled: this.filledOverride,
+      tonal: this.tonalOverride
+    };
+    signalMap[variant].update(v => ({ ...v, [mode]: value }));
   }
 
   toggleColorScheme(): void {
@@ -200,5 +232,9 @@ ${customComment}    container-background-color: light-dark(${lightVal}, ${darkVa
       html.classList.add(palette);
     }
     this.selectedPalette.set(palette);
+  }
+
+  onVariantChange(variant: '' | 'filled' | 'tonal'): void {
+    this.selectedVariant.set(variant);
   }
 }

@@ -2,5 +2,5 @@
  * Public API Surface of row-actions
  */
 
-export { RowActionComponent } from './lib/row-actions.component';
+export { RowActionsDirective, RowActionsVariant } from './lib/row-actions.component';
 

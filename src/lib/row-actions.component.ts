@@ -1,40 +1,40 @@
 import { AsyncPipe } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, HostBinding, inject, input, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, inject, input } from '@angular/core';
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { BehaviorSubject } from 'rxjs';
+import { RowActionsToolbarComponent, RowActionsVariant } from './row-actions-toolbar.component';
+
+export { RowActionsVariant } from './row-actions-toolbar.component';
 
 @Component({
-  selector: 'row-actions',
+  selector: 'span[rowActions], div[rowActions]',
   template: `
     @if (!disabled()) {
-      <span class="actions-trigger" cdkOverlayOrigin #trigger="cdkOverlayOrigin"></span>
+      <span style="display: flex; flex-grow: 1" cdkOverlayOrigin #trigger="cdkOverlayOrigin"></span>
       <ng-template cdkConnectedOverlay [cdkConnectedOverlayPositions]="overlayPositions" [cdkConnectedOverlayOrigin]="trigger" [cdkConnectedOverlayOpen]="!!(open$ | async)">
-        <mat-toolbar
-          class="row-actions-toolbar"
-          [style.height]="heightToolbar"
-          [style.min-height]="heightToolbar"
-          [style.max-height]="heightToolbar"
-          [class.expand-from-right]="animatedFrom === 'right'"
-          [class.expand-from-left]="animatedFrom === 'left'"
-          [class.no-animation]="animatedFrom === null"
-          animate.enter="enter-animation"
-          animate.leave="leave-animation">
+        <row-actions-toolbar
+          [variant]="rowActions()"
+          [animatedFrom]="animatedFrom"
+          [height]="heightToolbar">
           <ng-content></ng-content>
-        </mat-toolbar>
+        </row-actions-toolbar>
       </ng-template>
     }
   `,
-  styleUrl: './row-actions.component.scss',
   imports: [
     AsyncPipe,
-    MatToolbarModule,
     OverlayModule,
+    RowActionsToolbarComponent,
   ],
+  host: {
+    'style': 'position: relative; height: 100%; display: flex;',
+    '[style.margin-right.px]': 'marginRight',
+    '[style.flex-grow]': 'flexGrow',
+    '[style.left.px]': 'left',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None
 })
-export class RowActionComponent implements AfterViewInit {
+export class RowActionsDirective implements AfterViewInit {
 
   private readonly el = inject(ElementRef<HTMLElement>);
   private readonly destroyRef = inject(DestroyRef);
@@ -49,10 +49,10 @@ export class RowActionComponent implements AfterViewInit {
   private static readonly CLOSE_DELAY = 50;
 
   // Track all instances to close others when one opens
-  private static instances = new Set<RowActionComponent>();
+  private static instances = new Set<RowActionsDirective>();
 
-  private static cancelOthers(except: RowActionComponent): void {
-    for (const instance of RowActionComponent.instances) {
+  private static cancelOthers(except: RowActionsDirective): void {
+    for (const instance of RowActionsDirective.instances) {
       // Only affect instances from OTHER rows, not the same row
       if (instance.matRowElement !== except.matRowElement) {
         // Cancel pending open
@@ -76,22 +76,14 @@ export class RowActionComponent implements AfterViewInit {
 
   position: 'left' | 'right' = 'right';
 
-  readonly animationDisabled = input<boolean>(false);
-
   animatedFrom: 'left' | 'right' | null = null;
 
   readonly disabled = input<boolean | null>(false);
 
-  readonly variant = input<'filled' | 'tonal' | null>(null);
+  readonly rowActions = input<RowActionsVariant>('');
 
-  // Host bindings for positioning
-  @HostBinding('style.margin-right.px')
   marginRight = 0;
-
-  @HostBinding('style.flex-grow')
   flexGrow = 0;
-
-  @HostBinding('style.left.px')
   left = 0;
 
   ngAfterViewInit(): void {
@@ -116,10 +108,6 @@ export class RowActionComponent implements AfterViewInit {
         this.marginRight = -parseFloat(parentStyle.paddingRight);
       }
 
-      if (this.animationDisabled()) {
-        this.animatedFrom = null;
-      }
-
       this.cdr.markForCheck();
     });
 
@@ -129,12 +117,12 @@ export class RowActionComponent implements AfterViewInit {
     }
 
     // Register this instance
-    RowActionComponent.instances.add(this);
+    RowActionsDirective.instances.add(this);
 
     // Listen to mousemove on the row itself - more reliable than mouseenter
     this.rowMouseMoveListener = () => {
       // Cancel pending opens and close toolbars from other rows immediately
-      RowActionComponent.cancelOthers(this);
+      RowActionsDirective.cancelOthers(this);
 
       // Cancel any pending close for this row
       if (this.closeTimeoutId) {
@@ -149,7 +137,7 @@ export class RowActionComponent implements AfterViewInit {
           this.heightToolbar = parseInt(currentParentStyle.height) - 1 + 'px';
           this.open$.next(true);
           document.addEventListener('mousemove', this.documentMouseMoveListener);
-        }, RowActionComponent.OPEN_DELAY);
+        }, RowActionsDirective.OPEN_DELAY);
       }
     };
 
@@ -157,7 +145,7 @@ export class RowActionComponent implements AfterViewInit {
 
     // Cleanup on destroy
     this.destroyRef.onDestroy(() => {
-      RowActionComponent.instances.delete(this);
+      RowActionsDirective.instances.delete(this);
       this.open$.complete();
       if (this.openTimeoutId) {
         clearTimeout(this.openTimeoutId);
@@ -209,7 +197,7 @@ export class RowActionComponent implements AfterViewInit {
         this.closeTimeoutId = null;
         this.open$.next(false);
         document.removeEventListener('mousemove', this.documentMouseMoveListener);
-      }, RowActionComponent.CLOSE_DELAY);
+      }, RowActionsDirective.CLOSE_DELAY);
     }
   };
 }

@@ -60,7 +60,9 @@ html {
   }
 
   @include row-actions.overrides((
-    // container-background-color: light-dark(#548671, #421515)
+    // container-background-color: light-dark(#00ff95, #ff0000),
+    // filled-background-color: light-dark(#00ff95, #ff0000),
+    // tonal-background-color: light-dark(#00ff95, #ff0000)
   ));
 }
 

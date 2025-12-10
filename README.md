@@ -53,21 +53,20 @@ npm install @softwarity/row-actions
 
 ## Usage
 
-Import the standalone component in your component:
+Import the directive in your component:
 
 ```typescript
-import { RowActionComponent } from '@softwarity/row-actions';
+import { RowActionsDirective } from '@softwarity/row-actions';
 
 @Component({
   selector: 'app-my-component',
-  standalone: true,
-  imports: [RowActionComponent],
+  imports: [RowActionsDirective],
   template: `...`
 })
 export class MyComponent {}
 ```
 
-Add the `<row-actions>` component inside a `mat-cell`:
+Add the `rowActions` directive inside a `mat-cell`:
 
 ```html
 <mat-table [dataSource]="dataSource">
@@ -77,20 +76,35 @@ Add the `<row-actions>` component inside a `mat-cell`:
     <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
     <mat-cell *matCellDef="let element">
       {{ element.lastUpdated }}
-      <row-actions>
+      <span rowActions>
         <button matIconButton (click)="edit(element)">
           <mat-icon>edit</mat-icon>
         </button>
         <button matIconButton (click)="delete(element)">
           <mat-icon>delete</mat-icon>
         </button>
-      </row-actions>
+      </span>
     </mat-cell>
   </ng-container>
 
   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
   <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
 </mat-table>
+```
+
+### Variants
+
+The directive supports 3 visual variants:
+
+```html
+<!-- Default variant (surface-container) -->
+<span rowActions>...</span>
+
+<!-- Filled variant (primary-container) -->
+<span rowActions="filled">...</span>
+
+<!-- Tonal variant (secondary-container) -->
+<span rowActions="tonal">...</span>
 ```
 
 ## API
@@ -100,7 +114,6 @@ Add the `<row-actions>` component inside a `mat-cell`:
 | Input | Type | Default | Description |
 |-------|------|---------|-------------|
 | `disabled` | `boolean` | `false` | Disables the component (hides it completely) |
-| `animationDisabled` | `boolean` | `false` | Disables the expansion animation (set at initialization only) |
 
 ### Position Behavior
 
@@ -108,7 +121,7 @@ The toolbar automatically detects its position within the cell and animates acco
 - **First child** in cell → Toolbar appears from the **left**
 - **Last child** in cell → Toolbar appears from the **right**
 
-You can place `<row-actions>` in **any cell** of your table, not just a dedicated "actions" column. This allows you to add contextual actions to specific data columns.
+You can place `<span rowActions>` in **any cell** of your table, not just a dedicated "actions" column. This allows you to add contextual actions to specific data columns.
 
 ## Theming (Material 3)
 
@@ -134,37 +147,36 @@ html {
   ));
 }
 
-// Row actions theme (required)
-@include row-actions.overrides();
+// Optional: customize row actions colors
+// @include row-actions.overrides();
 ```
 
 ### Customization
 
-The `overrides` mixin accepts a map of tokens to customize the toolbar appearance:
+The `overrides` mixin accepts a map of tokens to customize the toolbar appearance for each variant:
 
 | Token | Default | Description |
 |-------|---------|-------------|
-| `container-background-color` | `var(--mat-sys-surface-container)` | Toolbar background color |
+| `container-background-color` | `var(--mat-sys-surface-container)` | Background for default variant |
+| `filled-background-color` | `var(--mat-sys-primary-container)` | Background for filled variant |
+| `tonal-background-color` | `var(--mat-sys-secondary-container)` | Background for tonal variant |
 
 ### Examples
 
 ```scss
+// Customize all variants with light/dark support
+@include row-actions.overrides((
+  container-background-color: light-dark(#e8def8, #4a4458),
+  filled-background-color: light-dark(#d0bcff, #381e72),
+  tonal-background-color: light-dark(#e8def8, #4a4458)
+));
+
 // Use Material 3 system colors
 @include row-actions.overrides((
-  container-background-color: var(--mat-sys-secondary)
+  container-background-color: var(--mat-sys-tertiary-container)
 ));
 
-// Use tertiary color
-@include row-actions.overrides((
-  container-background-color: var(--mat-sys-tertiary)
-));
-
-// Use error color for danger actions
-@include row-actions.overrides((
-  container-background-color: var(--mat-sys-error)
-));
-
-// Custom color
+// Custom color for default variant only
 @include row-actions.overrides((
   container-background-color: #1976d2
 ));
@@ -179,10 +191,10 @@ To customize the icon buttons, use Angular Material's `matIconButton` overrides 
 ```html
 <mat-cell *matCellDef="let element">
   {{ element.name }}
-  <row-actions>
+  <span rowActions>
     <button matIconButton><mat-icon>edit</mat-icon></button>
     <button matIconButton><mat-icon>delete</mat-icon></button>
-  </row-actions>
+  </span>
 </mat-cell>
 ```
 
@@ -190,10 +202,10 @@ To customize the icon buttons, use Angular Material's `matIconButton` overrides 
 
 ```html
 <mat-cell *matCellDef="let element">
-  <row-actions>
+  <span rowActions>
     <button matIconButton><mat-icon>edit</mat-icon></button>
     <button matIconButton><mat-icon>delete</mat-icon></button>
-  </row-actions>
+  </span>
   {{ element.name }}
 </mat-cell>
 ```
@@ -201,9 +213,9 @@ To customize the icon buttons, use Angular Material's `matIconButton` overrides 
 ### Conditionally Disabled
 
 ```html
-<row-actions [disabled]="!hasPermission">
+<span rowActions [disabled]="!hasPermission">
   <button matIconButton><mat-icon>edit</mat-icon></button>
-</row-actions>
+</span>
 ```
 
 ## License

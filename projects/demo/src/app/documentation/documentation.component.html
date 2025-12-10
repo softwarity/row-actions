@@ -13,16 +13,27 @@
     <pre><code class="language-html">&lt;ng-container matColumnDef="actions"&gt;
   &lt;mat-header-cell *matHeaderCellDef&gt;Actions&lt;/mat-header-cell&gt;
   &lt;mat-cell *matCellDef="let element"&gt;
-    &lt;row-actions&gt;
+    &lt;span rowActions&gt;
       &lt;button matIconButton (click)="edit(element)"&gt;
         &lt;mat-icon&gt;edit&lt;/mat-icon&gt;
       &lt;/button&gt;
       &lt;button matIconButton (click)="delete(element)"&gt;
         &lt;mat-icon&gt;delete&lt;/mat-icon&gt;
       &lt;/button&gt;
-    &lt;/row-actions&gt;
+    &lt;/span&gt;
   &lt;/mat-cell&gt;
 &lt;/ng-container&gt;</code></pre>
+
+    <h4>Variants</h4>
+    <p>The directive supports 3 visual variants:</p>
+    <pre><code class="language-html">&lt;!-- Default variant (surface-container) --&gt;
+&lt;span rowActions&gt;...&lt;/span&gt;
+
+&lt;!-- Filled variant (primary-container) --&gt;
+&lt;span rowActions="filled"&gt;...&lt;/span&gt;
+
+&lt;!-- Tonal variant (secondary-container) --&gt;
+&lt;span rowActions="tonal"&gt;...&lt;/span&gt;</code></pre>
   </article>
 
   <!-- API -->
@@ -44,12 +55,6 @@
             <td><code>boolean</code></td>
             <td><code>false</code></td>
             <td>Disables the component (hides it completely)</td>
-          </tr>
-          <tr>
-            <td><code>animationDisabled</code></td>
-            <td><code>boolean</code></td>
-            <td><code>false</code></td>
-            <td>Disables the expansion animation (set at initialization only)</td>
           </tr>
         </tbody>
       </table>
@@ -76,11 +81,11 @@ html &#123;
   ));
 &#125;
 
-// Row actions theme (required)
-&#64;include row-actions.overrides();</code></pre>
+// Optional: customize row actions colors
+// &#64;include row-actions.overrides();</code></pre>
 
     <h4>Customization</h4>
-    <p>The <code>overrides</code> mixin accepts a map of tokens to customize the toolbar appearance:</p>
+    <p>The <code>overrides</code> mixin accepts a map of tokens to customize the toolbar appearance for each variant:</p>
     <div class="api-table-wrapper">
       <table class="api-table">
         <thead>
@@ -94,29 +99,36 @@ html &#123;
           <tr>
             <td><code>container-background-color</code></td>
             <td><code>var(--mat-sys-surface-container)</code></td>
-            <td>Toolbar background color</td>
+            <td>Background for default variant</td>
+          </tr>
+          <tr>
+            <td><code>filled-background-color</code></td>
+            <td><code>var(--mat-sys-primary-container)</code></td>
+            <td>Background for filled variant</td>
+          </tr>
+          <tr>
+            <td><code>tonal-background-color</code></td>
+            <td><code>var(--mat-sys-secondary-container)</code></td>
+            <td>Background for tonal variant</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <h4>Examples</h4>
-    <pre><code class="language-scss">// Use Material 3 system colors
+    <pre><code class="language-scss">// Customize all variants with light/dark support
 &#64;include row-actions.overrides((
-  container-background-color: var(--mat-sys-secondary)
+  container-background-color: light-dark(#e8def8, #4a4458),
+  filled-background-color: light-dark(#d0bcff, #381e72),
+  tonal-background-color: light-dark(#e8def8, #4a4458)
 ));
 
-// Use tertiary color
+// Use Material 3 system colors
 &#64;include row-actions.overrides((
-  container-background-color: var(--mat-sys-tertiary)
+  container-background-color: var(--mat-sys-tertiary-container)
 ));
 
-// Use error color for danger actions
-&#64;include row-actions.overrides((
-  container-background-color: var(--mat-sys-error)
-));
-
-// Custom color
+// Custom color for default variant only
 &#64;include row-actions.overrides((
   container-background-color: #1976d2
 ));</code></pre>
@@ -131,17 +143,17 @@ html &#123;
       <li><strong>First child</strong> in cell → Toolbar appears from the <strong>left</strong></li>
       <li><strong>Last child</strong> in cell → Toolbar appears from the <strong>right</strong></li>
     </ul>
-    <p>You can place <code>&lt;row-actions&gt;</code> in any cell of your table, not just a dedicated "actions" column. This allows you to add contextual actions to specific data columns.</p>
+    <p>You can place <code>&lt;span rowActions&gt;</code> in any cell of your table, not just a dedicated "actions" column. This allows you to add contextual actions to specific data columns.</p>
     <pre><code ngNonBindable class="language-html">&lt;!-- Toolbar from LEFT --&gt;
 &lt;mat-cell *matCellDef="let element"&gt;
-  &lt;row-actions&gt;...&lt;/row-actions&gt;
+  &lt;span rowActions&gt;...&lt;/span&gt;
   &#123;&#123; element.name &#125;&#125;
 &lt;/mat-cell&gt;
 
 &lt;!-- Toolbar from RIGHT --&gt;
 &lt;mat-cell *matCellDef="let element"&gt;
   &#123;&#123; element.name &#125;&#125;
-  &lt;row-actions&gt;...&lt;/row-actions&gt;
+  &lt;span rowActions&gt;...&lt;/span&gt;
 &lt;/mat-cell&gt;</code></pre>
   </article>
 </section>

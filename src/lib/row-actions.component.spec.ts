@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, DebugElement, provideZonelessChangeDetection } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { RowActionComponent } from './row-actions.component';
+import { RowActionsDirective } from './row-actions.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,11 +14,11 @@ import { MatButtonModule } from '@angular/material/button';
         <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
         <mat-cell *matCellDef="let element">
           {{ element.name }}
-          <row-actions [disabled]="disabled" [animationDisabled]="animationDisabled">
+          <span rowActions [disabled]="disabled">
             <button matIconButton class="test-button">
               <mat-icon>edit</mat-icon>
             </button>
-          </row-actions>
+          </span>
         </mat-cell>
       </ng-container>
       <mat-header-row *matHeaderRowDef="['name']"></mat-header-row>
@@ -30,13 +30,12 @@ import { MatButtonModule } from '@angular/material/button';
     MatTableModule,
     MatIconModule,
     MatButtonModule,
-    RowActionComponent
+    RowActionsDirective
   ]
 })
 class TestHostComponent {
   dataSource = [{ name: 'Test User' }];
   disabled = false;
-  animationDisabled = false;
 }
 
 // Test host component with row-actions as first child (left position)
@@ -46,11 +45,11 @@ class TestHostComponent {
       <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
         <mat-cell *matCellDef="let element">
-          <row-actions>
+          <span rowActions>
             <button matIconButton class="test-button">
               <mat-icon>edit</mat-icon>
             </button>
-          </row-actions>
+          </span>
           {{ element.name }}
         </mat-cell>
       </ng-container>
@@ -63,7 +62,7 @@ class TestHostComponent {
     MatTableModule,
     MatIconModule,
     MatButtonModule,
-    RowActionComponent
+    RowActionsDirective
   ]
 })
 class TestHostLeftComponent {
@@ -78,11 +77,11 @@ class TestHostLeftComponent {
         <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
         <mat-cell *matCellDef="let element">
           {{ element.name }}
-          <row-actions>
+          <span rowActions>
             <button matIconButton class="test-button">
               <mat-icon>edit</mat-icon>
             </button>
-          </row-actions>
+          </span>
         </mat-cell>
       </ng-container>
       <mat-header-row *matHeaderRowDef="['name']"></mat-header-row>
@@ -94,7 +93,7 @@ class TestHostLeftComponent {
     MatTableModule,
     MatIconModule,
     MatButtonModule,
-    RowActionComponent
+    RowActionsDirective
   ]
 })
 class TestHostMultipleRowsComponent {
@@ -119,7 +118,7 @@ async function initializeFixture<T>(fixture: ComponentFixture<T>): Promise<void>
   fixture.detectChanges();
 }
 
-describe('RowActionComponent', () => {
+describe('RowActionsDirective', () => {
   describe('Basic functionality', () => {
     let fixture: ComponentFixture<TestHostComponent>;
     let hostComponent: TestHostComponent;
@@ -135,7 +134,7 @@ describe('RowActionComponent', () => {
       hostComponent = fixture.componentInstance;
       await initializeFixture(fixture);
 
-      rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
+      rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
     });
 
     it('should create', () => {
@@ -154,9 +153,10 @@ describe('RowActionComponent', () => {
       disabledFixture.componentInstance.disabled = true;
       await initializeFixture(disabledFixture);
 
-      const rowAction = disabledFixture.debugElement.query(By.directive(RowActionComponent));
-      const trigger = rowAction.query(By.css('.actions-trigger'));
-      expect(trigger).toBeNull();
+      const rowAction = disabledFixture.debugElement.query(By.directive(RowActionsDirective));
+      // When disabled, the overlay origin span should not be rendered
+      const overlayOrigin = rowAction.query(By.css('[cdkOverlayOrigin]'));
+      expect(overlayOrigin).toBeNull();
     });
 
     it('should be visible when not disabled', async () => {
@@ -164,12 +164,13 @@ describe('RowActionComponent', () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
-      const trigger = rowActionDebugElement.query(By.css('.actions-trigger'));
-      expect(trigger).toBeTruthy();
+      // The directive should be present and have the overlay origin span
+      const overlayOrigin = rowActionDebugElement.query(By.css('[cdkOverlayOrigin]'));
+      expect(overlayOrigin).toBeTruthy();
     });
 
     it('should have closed state initially', () => {
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
       expect(component.open$.getValue()).toBeFalse();
     });
   });
@@ -184,8 +185,8 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostComponent);
       await initializeFixture(fixture);
 
-      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
+      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
 
       expect(component.position).toBe('right');
     });
@@ -199,8 +200,8 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostLeftComponent);
       await initializeFixture(fixture);
 
-      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
+      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
 
       expect(component.position).toBe('left');
     });
@@ -219,11 +220,11 @@ describe('RowActionComponent', () => {
       fixture = TestBed.createComponent(TestHostComponent);
       await initializeFixture(fixture);
 
-      rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
+      rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
     });
 
     it('should open on mousemove on mat-row', async () => {
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
       const matRow = fixture.debugElement.query(By.css('mat-row'));
 
       expect(component.open$.getValue()).toBeFalse();
@@ -236,7 +237,7 @@ describe('RowActionComponent', () => {
     });
 
     it('should close when mouse leaves row bounds', async () => {
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
       const matRow = fixture.debugElement.query(By.css('mat-row'));
 
       // Open first
@@ -268,26 +269,10 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostComponent);
       await initializeFixture(fixture);
 
-      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
+      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
 
       expect(component.animatedFrom).toBe('right');
-    });
-
-    it('should disable animation when animationDisabled is true', async () => {
-      await TestBed.configureTestingModule({
-        imports: [TestHostComponent],
-        providers: [provideZonelessChangeDetection()]
-      }).compileComponents();
-
-      const fixture = TestBed.createComponent(TestHostComponent);
-      fixture.componentInstance.animationDisabled = true;
-      await initializeFixture(fixture);
-
-      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
-
-      expect(component.animatedFrom).toBeNull();
     });
   });
 
@@ -301,8 +286,8 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostComponent);
       await initializeFixture(fixture);
 
-      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
+      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
 
       expect(component.overlayPositions[0].originX).toBe('end');
       expect(component.overlayPositions[0].overlayX).toBe('end');
@@ -317,8 +302,8 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostLeftComponent);
       await initializeFixture(fixture);
 
-      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
+      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
 
       expect(component.overlayPositions[0].originX).toBe('start');
       expect(component.overlayPositions[0].overlayX).toBe('start');
@@ -335,8 +320,8 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostComponent);
       await initializeFixture(fixture);
 
-      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
+      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
 
       let completed = false;
       component.open$.subscribe({
@@ -382,7 +367,7 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostMultipleRowsComponent);
       await initializeFixture(fixture);
 
-      const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionComponent));
+      const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionsDirective));
       expect(rowActionElements.length).toBe(3);
     });
 
@@ -395,7 +380,7 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostMultipleRowsComponent);
       await initializeFixture(fixture);
 
-      const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionComponent));
+      const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionsDirective));
       const matRows = fixture.debugElement.queryAll(By.css('mat-row'));
 
       // Hover on the second row
@@ -404,9 +389,9 @@ describe('RowActionComponent', () => {
       fixture.detectChanges();
 
       // Only the second row-actions should be open
-      const component0 = rowActionElements[0].componentInstance as RowActionComponent;
-      const component1 = rowActionElements[1].componentInstance as RowActionComponent;
-      const component2 = rowActionElements[2].componentInstance as RowActionComponent;
+      const component0 = rowActionElements[0].componentInstance as RowActionsDirective;
+      const component1 = rowActionElements[1].componentInstance as RowActionsDirective;
+      const component2 = rowActionElements[2].componentInstance as RowActionsDirective;
 
       expect(component0.open$.getValue()).toBeFalse();
       expect(component1.open$.getValue()).toBeTrue();
@@ -422,7 +407,7 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostMultipleRowsComponent);
       await initializeFixture(fixture);
 
-      const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionComponent));
+      const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionsDirective));
       const matRows = fixture.debugElement.queryAll(By.css('mat-row'));
 
       // Hover on the first row
@@ -430,8 +415,8 @@ describe('RowActionComponent', () => {
       await waitForTimeout(100); // Wait for OPEN_DELAY
       fixture.detectChanges();
 
-      const component0 = rowActionElements[0].componentInstance as RowActionComponent;
-      const component1 = rowActionElements[1].componentInstance as RowActionComponent;
+      const component0 = rowActionElements[0].componentInstance as RowActionsDirective;
+      const component1 = rowActionElements[1].componentInstance as RowActionsDirective;
 
       expect(component0.open$.getValue()).toBeTrue();
 
@@ -455,8 +440,8 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostComponent);
       await initializeFixture(fixture);
 
-      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
+      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
       const matRow = fixture.debugElement.query(By.css('mat-row'));
 
       // Initial height
@@ -480,8 +465,8 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostComponent);
       await initializeFixture(fixture);
 
-      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
+      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
 
       // Overlay should be aligned to center
       expect(component.overlayPositions[0].originY).toBe('center');
@@ -499,8 +484,8 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostComponent);
       await initializeFixture(fixture);
 
-      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
+      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
       const matRow = fixture.debugElement.query(By.css('mat-row'));
 
       matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
@@ -522,10 +507,10 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostMultipleRowsComponent);
       await initializeFixture(fixture);
 
-      const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionComponent));
+      const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionsDirective));
       const matRows = fixture.debugElement.queryAll(By.css('mat-row'));
 
-      const component0 = rowActionElements[0].componentInstance as RowActionComponent;
+      const component0 = rowActionElements[0].componentInstance as RowActionsDirective;
 
       // Start hover on row 0
       matRows[0].nativeElement.dispatchEvent(new MouseEvent('mousemove'));
@@ -549,8 +534,8 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostComponent);
       await initializeFixture(fixture);
 
-      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
+      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
       const matRow = fixture.debugElement.query(By.css('mat-row'));
 
       // Open toolbar
@@ -583,11 +568,11 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostMultipleRowsComponent);
       await initializeFixture(fixture);
 
-      const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionComponent));
+      const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionsDirective));
       const matRows = fixture.debugElement.queryAll(By.css('mat-row'));
 
-      const component0 = rowActionElements[0].componentInstance as RowActionComponent;
-      const component1 = rowActionElements[1].componentInstance as RowActionComponent;
+      const component0 = rowActionElements[0].componentInstance as RowActionsDirective;
+      const component1 = rowActionElements[1].componentInstance as RowActionsDirective;
 
       // Start hover on row 0
       matRows[0].nativeElement.dispatchEvent(new MouseEvent('mousemove'));
@@ -612,11 +597,11 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostMultipleRowsComponent);
       await initializeFixture(fixture);
 
-      const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionComponent));
+      const rowActionElements = fixture.debugElement.queryAll(By.directive(RowActionsDirective));
       const matRows = fixture.debugElement.queryAll(By.css('mat-row'));
 
-      const component0 = rowActionElements[0].componentInstance as RowActionComponent;
-      const component1 = rowActionElements[1].componentInstance as RowActionComponent;
+      const component0 = rowActionElements[0].componentInstance as RowActionsDirective;
+      const component1 = rowActionElements[1].componentInstance as RowActionsDirective;
 
       // Open row 0
       matRows[0].nativeElement.dispatchEvent(new MouseEvent('mousemove'));
@@ -647,8 +632,8 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostComponent);
       await initializeFixture(fixture);
 
-      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
+      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
 
       // Should have flex-grow: 1 to push to the right edge
       expect(component.flexGrow).toBe(1);
@@ -665,8 +650,8 @@ describe('RowActionComponent', () => {
       const fixture = TestBed.createComponent(TestHostLeftComponent);
       await initializeFixture(fixture);
 
-      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionComponent));
-      const component = rowActionDebugElement.componentInstance as RowActionComponent;
+      const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
 
       // Should have flex-grow: 0
       expect(component.flexGrow).toBe(0);

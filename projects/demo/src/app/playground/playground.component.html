@@ -1,36 +1,28 @@
 <section class="playground">
   <h2>Playground</h2>
 
-  <!-- Generated Code -->
-  <div class="generated-code">
-    <pre><code class="language-html" [innerHTML]="highlightedCode"></code></pre>
-    <pre><code class="language-scss" [innerHTML]="highlightedScssCode"></code></pre>
-  </div>
+  <!-- Interactive HTML Code (no Prism - manual highlighting) -->
+  <pre class="fake-prism"><code><span class="token tag">&lt;mat-row&gt;</span>
+  <span class="token comment">...</span>
+  <span class="token tag">&lt;mat-cell&gt;</span>  <span class="token comment">&lt;!-- Toolbar from LEFT --&gt;</span>
+    <span class="token tag">&lt;span</span> <span class="token attr-name">rowActions</span> <span class="token attr-name">[disabled]</span>=<span class="token attr-value">&quot;</span><label class="inline-bool"><input type="checkbox" [checked]="leftDisabled()" (change)="leftDisabled.set($any($event.target).checked)"><span class="token keyword">{{ leftDisabled() }}</span></label><span class="token attr-value">&quot;</span><span class="token tag">&gt;</span>
+      <span class="token tag">&lt;button <span class="token attr-name">matIconButton</span>&gt;</span><span class="token comment">...</span><span class="token tag">&lt;/button&gt;</span>
+    <span class="token tag">&lt;/span&gt;</span>
+    <span class="token variable" ngNonBindable>&#123;&#123; user.name &#125;&#125;</span>
+  <span class="token tag">&lt;/mat-cell&gt;</span>
+  <span class="token comment">...</span>
+  <span class="token tag">&lt;mat-cell&gt;</span>  <span class="token comment">&lt;!-- Toolbar from RIGHT --&gt;</span>
+    <span class="token variable" ngNonBindable>&#123;&#123; user.lastUpdated &#125;&#125;</span>
+    <span class="token tag">&lt;span</span> <span class="token attr-name">rowActions</span>=<span class="token attr-value">&quot;</span><select class="inline-variant-select" [value]="selectedVariant()" (change)="onVariantChange($any($event.target).value)"><option value="">default</option><option value="filled">filled</option><option value="tonal">tonal</option></select><span class="token attr-value">&quot;</span> <span class="token attr-name">[disabled]</span>=<span class="token attr-value">&quot;</span><label class="inline-bool"><input type="checkbox" [checked]="rightDisabled()" (change)="rightDisabled.set($any($event.target).checked)"><span class="token keyword">{{ rightDisabled() }}</span></label><span class="token attr-value">&quot;</span><span class="token tag">&gt;</span>
+      <span class="token tag">&lt;button <span class="token attr-name">matIconButton</span>&gt;</span><span class="token comment">...</span><span class="token tag">&lt;/button&gt;</span>
+    <span class="token tag">&lt;/span&gt;</span>
+  <span class="token tag">&lt;/mat-cell&gt;</span>
+<span class="token tag">&lt;/mat-row&gt;</span></code></pre>
 
-  <!-- Demo Table with Controls Toolbar -->
-  <div class="demo-table-wrapper dark-mode">
+  <!-- Demo Table -->
+  <div class="demo-table-wrapper">
     <mat-toolbar>
-      <mat-checkbox [field]="configForm.disabled">disabled</mat-checkbox>
       <span class="spacer"></span>
-      @if (configForm.customBackground().value()) {
-        <label class="color-picker" title="Light mode color">
-          <mat-icon>light_mode</mat-icon>
-          <span class="color-swatch" [style.background]="lightColor()"></span>
-          <input type="color" [value]="lightColor()" (input)="onLightColorChange($event)">
-        </label>
-        <label class="color-picker" title="Dark mode color">
-          <mat-icon>dark_mode</mat-icon>
-          <span class="color-swatch" [style.background]="darkColor()"></span>
-          <input type="color" [value]="darkColor()" (input)="onDarkColorChange($event)">
-        </label>
-      }
-      <mat-checkbox [field]="configForm.customBackground" class="custom-checkbox">custom</mat-checkbox>
-      <mat-select [value]="selectedPalette()" (selectionChange)="onPaletteChange($event.value)" placeholder="Palette" class="palette-select">
-        <mat-option value="">Default (violet)</mat-option>
-        @for (palette of palettes; track palette) {
-          <mat-option [value]="palette">{{ palette }}</mat-option>
-        }
-      </mat-select>
       @if (isDarkMode()) {
         <button matIconButton (click)="toggleColorScheme()" title="Switch to light mode">
           <mat-icon>light_mode</mat-icon>
@@ -51,25 +43,18 @@
       <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
         <mat-cell *matCellDef="let user">
-          <row-actions>
+          <span rowActions [disabled]="leftDisabled()">
             <button matIconButton (click)="onEdit(user)" title="Edit">
               <mat-icon>edit</mat-icon>
             </button>
-          </row-actions>
+          </span>
           {{ user.name }}
         </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="email">
         <mat-header-cell *matHeaderCellDef>Email</mat-header-cell>
-        <mat-cell *matCellDef="let user">
-          {{ user.email }}
-          <row-actions>
-            <button matIconButton (click)="onEdit(user)" title="Edit">
-              <mat-icon>edit</mat-icon>
-            </button>
-          </row-actions>
-        </mat-cell>
+        <mat-cell *matCellDef="let user">{{ user.email }}</mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="role">
@@ -90,20 +75,17 @@
         <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
         <mat-cell *matCellDef="let user">
           {{ user.lastUpdated }}
-          <row-actions [disabled]="configForm.disabled().value()">
+          <span rowActions [rowActions]="selectedVariant()" [disabled]="rightDisabled()">
             <button matIconButton (click)="onView(user)" title="View">
               <mat-icon>visibility</mat-icon>
             </button>
             <button matIconButton (click)="onEdit(user)" title="Edit">
               <mat-icon>edit</mat-icon>
             </button>
-            <button matIconButton (click)="onDuplicate(user)" title="Duplicate">
-              <mat-icon>content_copy</mat-icon>
-            </button>
             <button matIconButton (click)="onDelete(user)" title="Delete">
               <mat-icon>delete</mat-icon>
             </button>
-          </row-actions>
+          </span>
         </mat-cell>
       </ng-container>
 
@@ -111,4 +93,21 @@
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
   </div>
+
+  <!-- Interactive SCSS Code (no Prism - manual highlighting) -->
+  <pre class="fake-prism"><code><span class="token comment">// In styles.scss</span>
+<span class="token keyword">&#64;use</span> <span class="token string">'&#64;angular/material'</span> <span class="token keyword">as</span> mat<span class="token punctuation">;</span>
+<span class="token keyword">&#64;use</span> <span class="token string">'&#64;softwarity/row-actions/row-actions-theme'</span> <span class="token keyword">as</span> row-actions<span class="token punctuation">;</span>
+
+<span class="token selector">html</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">color-scheme</span><span class="token punctuation">:</span> light<span class="token punctuation">;</span>
+  <span class="token keyword">&#64;include</span> <span class="token string">mat.</span><span class="token function">theme</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token property">color</span><span class="token punctuation">:</span> <span class="token string">mat.$</span><select class="inline-palette-select" [value]="selectedPalette()" (change)="onPaletteChange($any($event.target).value)"><option value="">violet</option><option value="red">red</option><option value="green">green</option><option value="blue">blue</option><option value="yellow">yellow</option><option value="cyan">cyan</option><option value="magenta">magenta</option><option value="orange">orange</option><option value="chartreuse">chartreuse</option><option value="spring-green">spring-green</option><option value="azure">azure</option><option value="violet">violet</option><option value="rose">rose</option></select><span class="token string">-palette</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token selector">&amp; body.dark-mode</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">color-scheme</span><span class="token punctuation">:</span> dark<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">&#64;include</span> row-actions.<span class="token function">overrides</span><span class="token punctuation">(</span><span class="token punctuation">(</span>
+<span class="override-line" [class.disabled]="!containerOverride().enabled"><input type="checkbox" [checked]="containerOverride().enabled" (change)="toggleOverride('container')"><span class="token comment" [hidden]="containerOverride().enabled">// </span><span class="token property">container-background-color</span><span class="token punctuation">:</span> <span class="token function">light-dark</span><span class="token punctuation">(</span><label class="inline-color"><input type="color" [value]="containerOverride().light" (input)="updateOverrideColor('container', 'light', $event)"><span class="color-preview" [style.background]="containerOverride().light"></span><span class="token string">{{ containerOverride().light }}</span></label><span class="token punctuation">,</span> <label class="inline-color"><input type="color" [value]="containerOverride().dark" (input)="updateOverrideColor('container', 'dark', $event)"><span class="color-preview" [style.background]="containerOverride().dark"></span><span class="token string">{{ containerOverride().dark }}</span></label><span class="token punctuation">),</span></span><span class="override-line" [class.disabled]="!filledOverride().enabled"><input type="checkbox" [checked]="filledOverride().enabled" (change)="toggleOverride('filled')"><span class="token comment" [hidden]="filledOverride().enabled">// </span><span class="token property">filled-background-color</span><span class="token punctuation">:</span> <span class="token function">light-dark</span><span class="token punctuation">(</span><label class="inline-color"><input type="color" [value]="filledOverride().light" (input)="updateOverrideColor('filled', 'light', $event)"><span class="color-preview" [style.background]="filledOverride().light"></span><span class="token string">{{ filledOverride().light }}</span></label><span class="token punctuation">,</span> <label class="inline-color"><input type="color" [value]="filledOverride().dark" (input)="updateOverrideColor('filled', 'dark', $event)"><span class="color-preview" [style.background]="filledOverride().dark"></span><span class="token string">{{ filledOverride().dark }}</span></label><span class="token punctuation">),</span></span><span class="override-line" [class.disabled]="!tonalOverride().enabled"><input type="checkbox" [checked]="tonalOverride().enabled" (change)="toggleOverride('tonal')"><span class="token comment" [hidden]="tonalOverride().enabled">// </span><span class="token property">tonal-background-color</span><span class="token punctuation">:</span> <span class="token function">light-dark</span><span class="token punctuation">(</span><label class="inline-color"><input type="color" [value]="tonalOverride().light" (input)="updateOverrideColor('tonal', 'light', $event)"><span class="color-preview" [style.background]="tonalOverride().light"></span><span class="token string">{{ tonalOverride().light }}</span></label><span class="token punctuation">,</span> <label class="inline-color"><input type="color" [value]="tonalOverride().dark" (input)="updateOverrideColor('tonal', 'dark', $event)"><span class="color-preview" [style.background]="tonalOverride().dark"></span><span class="token string">{{ tonalOverride().dark }}</span></label><span class="token punctuation">)</span></span>  <span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
 </section>

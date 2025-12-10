@@ -1,19 +1,31 @@
 @use 'sass:map';
-@use '@angular/material' as mat;
 
-/// Available tokens for row-actions
-/// - container-background-color: toolbar background color (default: --mat-sys-secondary-container)
-/// Values pertinent: primary, secondary, surface
+/// Available tokens for row-actions theming
+///
+/// @param {Map} $tokens - Map of tokens to override
+///   - container-background-color: Background color for the default variant
+///   - filled-background-color: Background color for the filled variant
+///   - tonal-background-color: Background color for the tonal variant
+///
+/// @example
+///   @include row-actions.overrides((
+///     container-background-color: #f5f5f5
+///   ));
 @mixin overrides($tokens: ()) {
   $defaults: (
-    container-background-color: var(--mat-sys-secondary-container)
+    container-background-color: null,
+    filled-background-color: null,
+    tonal-background-color: null
   );
   $merged: map.merge($defaults, $tokens);
 
-  .cdk-overlay-container .row-actions-toolbar {
-    @include mat.toolbar-overrides((
-      container-background-color: map.get($merged, container-background-color)
-    ));
+  @if map.get($merged, container-background-color) {
+    --row-actions-background: #{map.get($merged, container-background-color)};
+  }
+  @if map.get($merged, filled-background-color) {
+    --row-actions-filled-background: #{map.get($merged, filled-background-color)};
+  }
+  @if map.get($merged, tonal-background-color) {
+    --row-actions-tonal-background: #{map.get($merged, tonal-background-color)};
   }
 }
-

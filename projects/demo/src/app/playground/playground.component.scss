@@ -18,45 +18,129 @@
   flex: 1;
 }
 
-.custom-checkbox {
-  margin-right: 16px;
-}
-
-.palette-select {
-  width: 130px;
-  margin-right: 8px;
-}
-
-.color-picker {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-right: 16px;
-  cursor: pointer;
-  position: relative;
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    opacity: 0.7;
+// Fake PrismJS interactive code block
+.fake-prism {
+  code {
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 0.9em;
+    line-height: 1.5;
   }
 
-  .color-swatch {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid var(--mat-sys-outline);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  // Prism token colors (matching prism-tomorrow theme)
+  .token {
+    &.comment { color: #999; }
+    &.keyword { color: #cc99cd; }
+    &.string { color: #7ec699; }
+    &.selector { color: #f8c555; }
+    &.property { color: #f08d49; }
+    &.function { color: #6196cc; }
+    &.variable { color: #ccc; }
+    &.punctuation { color: #ccc; }
   }
 
-  input[type="color"] {
-    position: absolute;
-    width: 24px;
-    height: 24px;
-    opacity: 0;
+  // Override lines with checkbox and color pickers
+  .override-line {
+    display: flex;
+    align-items: center;
+    padding-left: 16px;
+
+    input[type="checkbox"] {
+      margin-right: 4px;
+      cursor: pointer;
+      accent-color: var(--accent-purple);
+    }
+
+    // When disabled (commented out), gray out the whole line
+    &.disabled {
+      .token, .inline-color .token, select {
+        color: #999 !important; // Same as comment color
+      }
+      .color-preview {
+        opacity: 0.5;
+      }
+    }
+  }
+
+  // Inline color picker
+  .inline-color {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
     cursor: pointer;
-    right: 0;
+    margin: 0 2px;
+
+    input[type="color"] {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .color-preview {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      vertical-align: middle;
+    }
+  }
+
+  // Inline palette select (native select) - green like strings
+  .inline-palette-select {
+    display: inline;
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: inherit;
+    color: #7ec699; // Same as .token.string
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed #7ec699;
+    cursor: pointer;
+    padding: 0;
+
+    option {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+  }
+
+  // Inline variant select - same green style
+  .inline-variant-select {
+    display: inline;
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: inherit;
+    color: #7ec699;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed #7ec699;
+    cursor: pointer;
+    padding: 0;
+
+    option {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+  }
+
+  // Inline checkbox for disabled attribute
+  .inline-checkbox {
+    cursor: pointer;
+    accent-color: #7ec699;
+    vertical-align: middle;
+  }
+
+  // Inline boolean (checkbox + true/false text)
+  .inline-bool {
+    cursor: pointer;
+
+    input[type="checkbox"] {
+      display: none;
+    }
+
+    .token.keyword {
+      border-bottom: 1px dashed #cc99cd;
+    }
   }
 }
 
@@ -64,6 +148,11 @@
   background: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   overflow: hidden;
+
+  // Debug: show cell borders
+  mat-cell, mat-header-cell {
+    border: 1px dashed var(--mat-sys-outline-variant);
+  }
 }
 
 // Badges
@@ -102,5 +191,17 @@
   &[data-status="pending"] {
     background-color: rgba(255, 166, 87, 0.2);
     color: #ffa657;
+  }
+}
+
+// Variant header row
+.variant-row {
+  background: var(--mat-sys-surface-variant);
+  min-height: 32px;
+
+  .variant-header {
+    font-family: monospace;
+    font-size: 11px;
+    color: var(--mat-sys-on-surface-variant);
   }
 }
