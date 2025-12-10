@@ -7,16 +7,16 @@
   </div>
 
   <!-- Demo Table with Controls Toolbar -->
-  <div class="demo-table-wrapper">
+  <div class="demo-table-wrapper dark-mode">
     <mat-toolbar>
       <mat-checkbox [field]="configForm.disabled">disabled</mat-checkbox>
       <span class="spacer"></span>
       @if (isDarkMode()) {
-        <button matIconButton (click)="toggleTheme()" title="Switch to light mode">
+        <button matIconButton (click)="toggleColorScheme()" title="Switch to light mode">
           <mat-icon>light_mode</mat-icon>
         </button>
       } @else {
-        <button matIconButton (click)="toggleTheme()" title="Switch to dark mode">
+        <button matIconButton (click)="toggleColorScheme()" title="Switch to dark mode">
           <mat-icon>dark_mode</mat-icon>
         </button>
       }

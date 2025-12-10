@@ -97,7 +97,7 @@ export class PlaygroundComponent implements AfterViewInit {
     this.highlightedCode = Prism.highlight(code, Prism.languages.html, 'html');
   }
 
-  toggleTheme(): void {
+  toggleColorScheme(): void {
     this.isDarkMode.update(dark => !dark);
     document.body.classList.toggle('dark-mode', this.isDarkMode());
   }

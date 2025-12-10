@@ -1,8 +1,12 @@
 @use '@angular/material' as mat;
+@use '@softwarity/row-actions/row-actions-theme' as row-actions;
+
+:host {
+  background: transparent;
+}
 
 .playground {
   margin-bottom: 32px;
-  background: transparent;
 }
 
 // Generated Code
