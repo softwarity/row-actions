@@ -55,19 +55,28 @@ export class PlaygroundComponent implements AfterViewInit {
   dataSource = USERS_DATA;
 
   // Configuration options with Signal Forms
-  protected configModel = signal({ disabled: false });
+  protected configModel = signal({ disabled: false, customBackground: false });
   protected configForm = form(this.configModel);
 
   protected isDarkMode = signal(document.body.classList.contains('dark-mode'));
 
+  // Custom background colors
+  protected lightColor = signal('#e8def8');
+  protected darkColor = signal('#4a4458');
+
   // Highlighted code for display
   highlightedCode = '';
+  highlightedScssCode = '';
 
   constructor() {
-    // React to disabled changes to update highlighted code
+    // React to config changes to update highlighted code
     effect(() => {
       this.configForm.disabled().value();
+      this.configForm.customBackground().value();
+      this.lightColor();
+      this.darkColor();
       this.highlightCode();
+      this.updateCustomBackground();
     });
   }
 
@@ -93,8 +102,49 @@ export class PlaygroundComponent implements AfterViewInit {
   }
 
   highlightCode(): void {
-    const code = this.generatedCode;
-    this.highlightedCode = Prism.highlight(code, Prism.languages.html, 'html');
+    this.highlightedCode = Prism.highlight(this.generatedCode, Prism.languages.html, 'html');
+    this.highlightedScssCode = Prism.highlight(this.generatedScssCode, Prism.languages.scss, 'scss');
+  }
+
+  protected get generatedScssCode(): string {
+    const isActive = this.configForm.customBackground().value();
+    const lightVal = isActive ? this.lightColor() : '#e8def8';
+    const darkVal = isActive ? this.darkColor() : '#4a4458';
+    const comment = isActive ? '' : '// ';
+
+    return `// In styles.scss
+@use '@softwarity/row-actions/row-actions-theme' as row-actions;
+
+${comment}@include row-actions.overrides((
+${comment}  container-background-color: light-dark(${lightVal}, ${darkVal})
+${comment}));`;
+  }
+
+  private styleElement: HTMLStyleElement | null = null;
+
+  updateCustomBackground(): void {
+    if (this.configForm.customBackground().value()) {
+      if (!this.styleElement) {
+        this.styleElement = document.createElement('style');
+        document.head.appendChild(this.styleElement);
+      }
+      this.styleElement.textContent = `
+        .cdk-overlay-container .row-actions-toolbar.mat-toolbar {
+          --mat-toolbar-container-background-color: light-dark(${this.lightColor()}, ${this.darkColor()}) !important;
+        }
+      `;
+    } else if (this.styleElement) {
+      this.styleElement.remove();
+      this.styleElement = null;
+    }
+  }
+
+  onLightColorChange(event: Event): void {
+    this.lightColor.set((event.target as HTMLInputElement).value);
+  }
+
+  onDarkColorChange(event: Event): void {
+    this.darkColor.set((event.target as HTMLInputElement).value);
   }
 
   toggleColorScheme(): void {

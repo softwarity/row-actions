@@ -4,6 +4,7 @@
   <!-- Generated Code -->
   <div class="generated-code">
     <pre><code class="language-html" [innerHTML]="highlightedCode"></code></pre>
+    <pre><code class="language-scss" [innerHTML]="highlightedScssCode"></code></pre>
   </div>
 
   <!-- Demo Table with Controls Toolbar -->
@@ -11,6 +12,19 @@
     <mat-toolbar>
       <mat-checkbox [field]="configForm.disabled">disabled</mat-checkbox>
       <span class="spacer"></span>
+      @if (configForm.customBackground().value()) {
+        <label class="color-picker" title="Light mode color">
+          <mat-icon>light_mode</mat-icon>
+          <span class="color-swatch" [style.background]="lightColor()"></span>
+          <input type="color" [value]="lightColor()" (input)="onLightColorChange($event)">
+        </label>
+        <label class="color-picker" title="Dark mode color">
+          <mat-icon>dark_mode</mat-icon>
+          <span class="color-swatch" [style.background]="darkColor()"></span>
+          <input type="color" [value]="darkColor()" (input)="onDarkColorChange($event)">
+        </label>
+      }
+      <mat-checkbox [field]="configForm.customBackground">theming</mat-checkbox>
       @if (isDarkMode()) {
         <button matIconButton (click)="toggleColorScheme()" title="Switch to light mode">
           <mat-icon>light_mode</mat-icon>
