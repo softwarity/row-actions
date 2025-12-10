@@ -6,8 +6,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSelectModule } from '@angular/material/select';
 import { RowActionComponent } from '@softwarity/row-actions';
 import { MatDividerModule } from '@angular/material/divider';
+
+const PALETTES = [
+  'red', 'green', 'blue', 'yellow', 'cyan', 'magenta',
+  'orange', 'chartreuse', 'spring-green', 'azure', 'violet', 'rose'
+] as const;
 
 declare const Prism: any;
 
@@ -43,6 +49,7 @@ const USERS_DATA: User[] = [
     MatSnackBarModule,
     MatDividerModule,
     MatCheckboxModule,
+    MatSelectModule,
     RowActionComponent,
   ],
   templateUrl: './playground.component.html',
@@ -60,6 +67,10 @@ export class PlaygroundComponent implements AfterViewInit {
 
   protected isDarkMode = signal(document.body.classList.contains('dark-mode'));
 
+  // Palette selection
+  protected palettes = PALETTES;
+  protected selectedPalette = signal<string>('');
+
   // Custom background colors
   protected lightColor = signal('#e8def8');
   protected darkColor = signal('#4a4458');
@@ -75,6 +86,7 @@ export class PlaygroundComponent implements AfterViewInit {
       this.configForm.customBackground().value();
       this.lightColor();
       this.darkColor();
+      this.selectedPalette();
       this.highlightCode();
       this.updateCustomBackground();
     });
@@ -107,17 +119,28 @@ export class PlaygroundComponent implements AfterViewInit {
   }
 
   protected get generatedScssCode(): string {
-    const isActive = this.configForm.customBackground().value();
-    const lightVal = isActive ? this.lightColor() : '#e8def8';
-    const darkVal = isActive ? this.darkColor() : '#4a4458';
-    const comment = isActive ? '' : '// ';
+    const isCustomActive = this.configForm.customBackground().value();
+    const lightVal = isCustomActive ? this.lightColor() : '#e8def8';
+    const darkVal = isCustomActive ? this.darkColor() : '#4a4458';
+    const customComment = isCustomActive ? '' : '// ';
+    const palette = this.selectedPalette() || 'violet';
 
     return `// In styles.scss
+@use '@angular/material' as mat;
 @use '@softwarity/row-actions/row-actions-theme' as row-actions;
 
-${comment}@include row-actions.overrides((
-${comment}  container-background-color: light-dark(${lightVal}, ${darkVal})
-${comment}));`;
+html {
+  color-scheme: light;
+  @include mat.theme((color: mat.$${palette}-palette));
+
+  & body.dark-mode {
+    color-scheme: dark;
+  }
+
+  @include row-actions.overrides((
+${customComment}    container-background-color: light-dark(${lightVal}, ${darkVal})
+  ));
+}`;
   }
 
   private styleElement: HTMLStyleElement | null = null;
@@ -166,5 +189,16 @@ ${comment}));`;
 
   onDuplicate(user: User): void {
     this.snackBar.open(`Duplicate: ${user.name}`, 'Close', { duration: 2000 });
+  }
+
+  onPaletteChange(palette: string): void {
+    const html = document.documentElement;
+    // Remove all palette classes
+    PALETTES.forEach(p => html.classList.remove(p));
+    // Add selected palette class
+    if (palette) {
+      html.classList.add(palette);
+    }
+    this.selectedPalette.set(palette);
   }
 }

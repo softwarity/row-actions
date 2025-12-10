@@ -82,6 +82,8 @@ export class RowActionComponent implements AfterViewInit {
 
   readonly disabled = input<boolean | null>(false);
 
+  readonly variant = input<'filled' | 'tonal' | null>(null);
+
   // Host bindings for positioning
   @HostBinding('style.margin-right.px')
   marginRight = 0;

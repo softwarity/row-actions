@@ -4,19 +4,55 @@
 // Material 3 Theme
 html {
   color-scheme: light;
-  @include mat.theme((
-    color: mat.$violet-palette,
-    typography: Roboto,
-    density: 0
-  ));
+  @include mat.theme((color: mat.$violet-palette));
 
+  &.red {
+    color-scheme: light;
+    @include mat.theme((color: mat.$red-palette));
+  }
   &.green {
     color-scheme: light;
-    @include mat.theme((
-      color: mat.$green-palette,
-      typography: Roboto,
-      density: 0
-    ));
+    @include mat.theme((color: mat.$green-palette));
+  }
+  &.blue {
+    color-scheme: light;
+    @include mat.theme((color: mat.$blue-palette));
+  }
+  &.yellow {
+    color-scheme: light;
+    @include mat.theme((color: mat.$yellow-palette));
+  }
+  &.cyan {
+    color-scheme: light;
+    @include mat.theme((color: mat.$cyan-palette));
+  }
+  &.magenta {
+    color-scheme: light;
+    @include mat.theme((color: mat.$magenta-palette));
+  }
+  &.orange {
+    color-scheme: light;
+    @include mat.theme((color: mat.$orange-palette));
+  }
+  &.chartreuse {
+    color-scheme: light;
+    @include mat.theme((color: mat.$chartreuse-palette));
+  }
+  &.spring-green {
+    color-scheme: light;
+    @include mat.theme((color: mat.$spring-green-palette));
+  }
+  &.azure {
+    color-scheme: light;
+    @include mat.theme((color: mat.$azure-palette));
+  }
+  &.violet {
+    color-scheme: light;
+    @include mat.theme((color: mat.$violet-palette));
+  }
+  &.rose {
+    color-scheme: light;
+    @include mat.theme((color: mat.$rose-palette));
   }
 
   & body.dark-mode {

@@ -2,10 +2,11 @@
 @use '@angular/material' as mat;
 
 /// Available tokens for row-actions
-/// - container-background-color: toolbar background color (default: --mat-sys-surface-container)
+/// - container-background-color: toolbar background color (default: --mat-sys-secondary-container)
+/// Values pertinent: primary, secondary, surface
 @mixin overrides($tokens: ()) {
   $defaults: (
-    container-background-color: var(--mat-sys-surface-container)
+    container-background-color: var(--mat-sys-secondary-container)
   );
   $merged: map.merge($defaults, $tokens);
 
@@ -15,3 +16,4 @@
     ));
   }
 }
+

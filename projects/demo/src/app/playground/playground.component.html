@@ -24,7 +24,13 @@
           <input type="color" [value]="darkColor()" (input)="onDarkColorChange($event)">
         </label>
       }
-      <mat-checkbox [field]="configForm.customBackground">theming</mat-checkbox>
+      <mat-checkbox [field]="configForm.customBackground" class="custom-checkbox">custom</mat-checkbox>
+      <mat-select [value]="selectedPalette()" (selectionChange)="onPaletteChange($event.value)" placeholder="Palette" class="palette-select">
+        <mat-option value="">Default (violet)</mat-option>
+        @for (palette of palettes; track palette) {
+          <mat-option [value]="palette">{{ palette }}</mat-option>
+        }
+      </mat-select>
       @if (isDarkMode()) {
         <button matIconButton (click)="toggleColorScheme()" title="Switch to light mode">
           <mat-icon>light_mode</mat-icon>
