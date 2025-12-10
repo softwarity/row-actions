@@ -1,5 +1,35 @@
 # Release Notes
 
+## 3.0.3
+
+### Breaking Changes
+- **Directive Pattern** - Changed from `<row-actions>` component to `<span rowActions>` directive
+  - Before: `<row-actions><button>...</button></row-actions>`
+  - After: `<span rowActions><button>...</button></span>`
+
+### Features
+- **Variants** - New `filled` and `tonal` variants for the toolbar background
+  - Default: `surface-container`
+  - Filled: `primary-container`
+  - Tonal: `secondary-container`
+
+### Theming
+- **CSS Custom Properties** - Toolbar colors now use CSS variables with fallback to Material 3 tokens:
+  - `--row-actions-background`
+  - `--row-actions-filled-background`
+  - `--row-actions-tonal-background`
+- **SCSS Overrides** - The `overrides()` mixin now sets these CSS variables for each variant
+
+---
+
+## 3.0.2
+
+### Improvements
+- **Preview image** - Updated preview image for improved visual representation
+- **License badge** - Updated license badge to use a more descriptive format
+
+---
+
 ## 3.0.1
 
 ### Angular 21 Support
