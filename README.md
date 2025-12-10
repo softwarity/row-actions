@@ -24,7 +24,7 @@ An Angular component that displays a collapsible action toolbar when hovering ov
 
 <p align="center">
   <a href="https://softwarity.github.io/row-actions/">
-    <img src="preview.png" alt="Row Actions Preview" width="800">
+    <img src="projects/demo/src/assets/preview.png" alt="Row Actions Preview" width="800">
   </a>
 </p>
 
