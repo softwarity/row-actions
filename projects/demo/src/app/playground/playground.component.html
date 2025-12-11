@@ -1,8 +1,15 @@
 <section class="playground">
   <h2>Playground</h2>
 
+  <!-- Interactive index.html fragment with color scheme toggle -->
+  <pre class="fake-prism html-fragment"><code><span class="token comment">&lt;!-- index.html --&gt;</span>
+<span class="token tag">&lt;body</span> <span class="token attr-name">class</span>=<span class="token attr-value">"{{ isDarkMode() ? 'dark-mode' : '' }}"</span><span class="token tag">&gt;</span>
+  <span class="token comment">...</span>
+<span class="token tag">&lt;/body&gt;</span></code><button class="color-scheme-toggle" (click)="toggleColorScheme()" [title]="isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'">@if (isDarkMode()) {<mat-icon>light_mode</mat-icon>} @else {<mat-icon>dark_mode</mat-icon>}</button></pre>
+
   <!-- Interactive HTML Code (no Prism - manual highlighting) -->
-  <pre class="fake-prism"><code><span class="token tag">&lt;mat-row&gt;</span>
+  <pre class="fake-prism"><code><span class="token comment">&lt;!-- your-component.html --&gt;</span>
+<span class="token tag">&lt;mat-row&gt;</span>
   <span class="token comment">...</span>
   <span class="token tag">&lt;mat-cell&gt;</span>  <span class="token comment">&lt;!-- Toolbar from LEFT --&gt;</span>
     <span class="token tag">&lt;span</span> <span class="token attr-name">rowActions</span> <span class="token attr-name">[disabled]</span>=<span class="token attr-value">&quot;</span><label class="inline-bool"><input type="checkbox" [checked]="leftDisabled()" (change)="leftDisabled.set($any($event.target).checked)"><span class="token keyword">{{ leftDisabled() }}</span></label><span class="token attr-value">&quot;</span><span class="token tag">&gt;</span>
@@ -19,80 +26,12 @@
   <span class="token tag">&lt;/mat-cell&gt;</span>
 <span class="token tag">&lt;/mat-row&gt;</span></code></pre>
 
-  <!-- Demo Table -->
-  <div class="demo-table-wrapper">
-    <mat-toolbar>
-      <span class="spacer"></span>
-      @if (isDarkMode()) {
-        <button matIconButton (click)="toggleColorScheme()" title="Switch to light mode">
-          <mat-icon>light_mode</mat-icon>
-        </button>
-      } @else {
-        <button matIconButton (click)="toggleColorScheme()" title="Switch to dark mode">
-          <mat-icon>dark_mode</mat-icon>
-        </button>
-      }
-    </mat-toolbar>
-    <mat-divider></mat-divider>
-    <mat-table [dataSource]="dataSource">
-      <ng-container matColumnDef="id">
-        <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
-        <mat-cell *matCellDef="let user">{{ user.id }}</mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
-        <mat-cell *matCellDef="let user">
-          <span rowActions [disabled]="leftDisabled()">
-            <button matIconButton (click)="onEdit(user)" title="Edit">
-              <mat-icon>edit</mat-icon>
-            </button>
-          </span>
-          {{ user.name }}
-        </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="email">
-        <mat-header-cell *matHeaderCellDef>Email</mat-header-cell>
-        <mat-cell *matCellDef="let user">{{ user.email }}</mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="role">
-        <mat-header-cell *matHeaderCellDef>Role</mat-header-cell>
-        <mat-cell *matCellDef="let user">
-          <span class="badge" [attr.data-role]="user.role.toLowerCase()">{{ user.role }}</span>
-        </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="status">
-        <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
-        <mat-cell *matCellDef="let user">
-          <span class="badge" [attr.data-status]="user.status.toLowerCase()">{{ user.status }}</span>
-        </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-        <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
-        <mat-cell *matCellDef="let user">
-          {{ user.lastUpdated }}
-          <span rowActions [rowActions]="selectedVariant()" [disabled]="rightDisabled()">
-            <button matIconButton (click)="onView(user)" title="View">
-              <mat-icon>visibility</mat-icon>
-            </button>
-            <button matIconButton (click)="onEdit(user)" title="Edit">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button matIconButton (click)="onDelete(user)" title="Delete">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </span>
-        </mat-cell>
-      </ng-container>
-
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-    </mat-table>
-  </div>
+  <!-- Table Preview Component -->
+  <app-table-preview
+    [leftDisabled]="leftDisabled()"
+    [rightDisabled]="rightDisabled()"
+    [variant]="selectedVariant()"
+  />
 
   <!-- Interactive SCSS Code (no Prism - manual highlighting) -->
   <pre class="fake-prism"><code><span class="token comment">// In styles.scss</span>
