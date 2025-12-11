@@ -2,7 +2,7 @@ import { Component, effect, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { TablePreviewComponent } from '../table-preview/table-preview.component';
 import { TablePreviewNativeComponent } from '../table-preview-native/table-preview-native.component';
-import { LoadingIndicatorComponent } from '../loading-indicator/loading-indicator.component';
+import { LoadingIndicatorComponent } from '@softwarity/loading-indicator';
 
 const PALETTES = [
   'red', 'green', 'blue', 'yellow', 'cyan', 'magenta',
