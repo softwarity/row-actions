@@ -34,11 +34,13 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Remove local row-actions reference and install from npm
+        run: |
+          npm remove @softwarity/row-actions
+          npm i @softwarity/row-actions
 
-      - name: Build library
-        run: npm run build
+      - name: Remove path mapping for demo
+        run: sed -i '/"paths"/,/}/d' projects/demo/tsconfig.app.json
 
       - name: Build demo for GitHub Pages
         run: npm run build:demo -- --base-href /row-actions/
