@@ -104,6 +104,68 @@ class TestHostMultipleRowsComponent {
   ];
 }
 
+// Test host component using native table syntax
+@Component({
+  template: `
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.name }}
+          <span rowActions>
+            <button matIconButton class="test-button">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </span>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="['name']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['name'];"></tr>
+    </table>
+  `,
+  standalone: true,
+  imports: [
+    MatTableModule,
+    MatIconModule,
+    MatButtonModule,
+    RowActionsDirective
+  ]
+})
+class TestHostNativeTableComponent {
+  dataSource = [{ name: 'Test User' }];
+}
+
+// Test host component using native table syntax with left position
+@Component({
+  template: `
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let element">
+          <span rowActions>
+            <button matIconButton class="test-button">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </span>
+          {{ element.name }}
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="['name']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['name'];"></tr>
+    </table>
+  `,
+  standalone: true,
+  imports: [
+    MatTableModule,
+    MatIconModule,
+    MatButtonModule,
+    RowActionsDirective
+  ]
+})
+class TestHostNativeTableLeftComponent {
+  dataSource = [{ name: 'Test User' }];
+}
+
 // Helper function to wait for setTimeout in zoneless mode
 function waitForTimeout(ms = 0): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -657,6 +719,180 @@ describe('RowActionsDirective', () => {
       expect(component.flexGrow).toBe(0);
       // left should be negative (to compensate cell padding)
       expect(component.left).toBeLessThanOrEqual(0);
+    });
+  });
+
+  describe('Table mode detection', () => {
+    describe('Component table mode (mat-table)', () => {
+      it('should detect component table mode', async () => {
+        await TestBed.configureTestingModule({
+          imports: [TestHostComponent],
+          providers: [provideZonelessChangeDetection()]
+        }).compileComponents();
+
+        const fixture = TestBed.createComponent(TestHostComponent);
+        await initializeFixture(fixture);
+
+        const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+        const component = rowActionDebugElement.componentInstance as RowActionsDirective;
+
+        // In component mode, offsetY should be 0 (no adjustment needed)
+        expect(component.offsetY).toBe(0);
+      });
+
+      it('should have offsetY = 0 after opening in component mode', async () => {
+        await TestBed.configureTestingModule({
+          imports: [TestHostComponent],
+          providers: [provideZonelessChangeDetection()]
+        }).compileComponents();
+
+        const fixture = TestBed.createComponent(TestHostComponent);
+        await initializeFixture(fixture);
+
+        const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+        const component = rowActionDebugElement.componentInstance as RowActionsDirective;
+        const matRow = fixture.debugElement.query(By.css('mat-row'));
+
+        // Open toolbar
+        matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+        await waitForTimeout(100);
+        fixture.detectChanges();
+
+        expect(component.open$.getValue()).toBeTrue();
+        expect(component.offsetY).toBe(0);
+      });
+    });
+
+    describe('Native table mode (table mat-table)', () => {
+      it('should detect native table mode', async () => {
+        await TestBed.configureTestingModule({
+          imports: [TestHostNativeTableComponent],
+          providers: [provideZonelessChangeDetection()]
+        }).compileComponents();
+
+        const fixture = TestBed.createComponent(TestHostNativeTableComponent);
+        await initializeFixture(fixture);
+
+        const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+        const component = rowActionDebugElement.componentInstance as RowActionsDirective;
+        const matRow = fixture.debugElement.query(By.css('tr[mat-row]'));
+
+        // Open toolbar to trigger offsetY calculation
+        matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+        await waitForTimeout(100);
+        fixture.detectChanges();
+
+        expect(component.open$.getValue()).toBeTrue();
+        // In native mode, offsetY is calculated to center the overlay
+        // The exact value depends on the layout, but it should be set
+        expect(component.offsetY).toBeDefined();
+      });
+
+      it('should open on mousemove on native tr[mat-row]', async () => {
+        await TestBed.configureTestingModule({
+          imports: [TestHostNativeTableComponent],
+          providers: [provideZonelessChangeDetection()]
+        }).compileComponents();
+
+        const fixture = TestBed.createComponent(TestHostNativeTableComponent);
+        await initializeFixture(fixture);
+
+        const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+        const component = rowActionDebugElement.componentInstance as RowActionsDirective;
+        const matRow = fixture.debugElement.query(By.css('tr[mat-row]'));
+
+        expect(component.open$.getValue()).toBeFalse();
+
+        matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+        await waitForTimeout(100);
+        fixture.detectChanges();
+
+        expect(component.open$.getValue()).toBeTrue();
+      });
+
+      it('should detect right position in native table', async () => {
+        await TestBed.configureTestingModule({
+          imports: [TestHostNativeTableComponent],
+          providers: [provideZonelessChangeDetection()]
+        }).compileComponents();
+
+        const fixture = TestBed.createComponent(TestHostNativeTableComponent);
+        await initializeFixture(fixture);
+
+        const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+        const component = rowActionDebugElement.componentInstance as RowActionsDirective;
+
+        expect(component.position).toBe('right');
+      });
+
+      it('should detect left position in native table', async () => {
+        await TestBed.configureTestingModule({
+          imports: [TestHostNativeTableLeftComponent],
+          providers: [provideZonelessChangeDetection()]
+        }).compileComponents();
+
+        const fixture = TestBed.createComponent(TestHostNativeTableLeftComponent);
+        await initializeFixture(fixture);
+
+        const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+        const component = rowActionDebugElement.componentInstance as RowActionsDirective;
+
+        expect(component.position).toBe('left');
+      });
+
+      it('should use row height for toolbar in native mode', async () => {
+        await TestBed.configureTestingModule({
+          imports: [TestHostNativeTableComponent],
+          providers: [provideZonelessChangeDetection()]
+        }).compileComponents();
+
+        const fixture = TestBed.createComponent(TestHostNativeTableComponent);
+        await initializeFixture(fixture);
+
+        const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+        const component = rowActionDebugElement.componentInstance as RowActionsDirective;
+        const matRow = fixture.debugElement.query(By.css('tr[mat-row]'));
+
+        // Open toolbar
+        matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+        await waitForTimeout(100);
+        fixture.detectChanges();
+
+        // heightToolbar should be set based on row height
+        expect(component.heightToolbar).toBeTruthy();
+        expect(component.heightToolbar).toMatch(/^\d+px$/);
+      });
+
+      it('should close when mouse leaves row bounds in native mode', async () => {
+        await TestBed.configureTestingModule({
+          imports: [TestHostNativeTableComponent],
+          providers: [provideZonelessChangeDetection()]
+        }).compileComponents();
+
+        const fixture = TestBed.createComponent(TestHostNativeTableComponent);
+        await initializeFixture(fixture);
+
+        const rowActionDebugElement = fixture.debugElement.query(By.directive(RowActionsDirective));
+        const component = rowActionDebugElement.componentInstance as RowActionsDirective;
+        const matRow = fixture.debugElement.query(By.css('tr[mat-row]'));
+
+        // Open first
+        matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+        await waitForTimeout(100);
+        fixture.detectChanges();
+        expect(component.open$.getValue()).toBeTrue();
+
+        // Simulate mouse move outside bounds
+        const mouseMoveEvent = new MouseEvent('mousemove', {
+          clientX: -100,
+          clientY: -100
+        });
+        document.dispatchEvent(mouseMoveEvent);
+        await waitForTimeout(100);
+        fixture.detectChanges();
+
+        expect(component.open$.getValue()).toBeFalse();
+      });
     });
   });
 });

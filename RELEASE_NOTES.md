@@ -2,6 +2,10 @@
 
 ## 3.0.4
 
+### Features
+- **Native table support** - Added support for native table syntax (`<table mat-table>`)
+- **Row height adaptation** - Toolbar automatically adapts to any row height configured via `mat.table-overrides()`
+
 ### Theming
 - **SCSS tokens renamed** - Added `-color` suffix for consistency:
   - `container-background-color`

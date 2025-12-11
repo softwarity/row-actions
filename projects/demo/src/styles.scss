@@ -66,6 +66,10 @@ html {
     // filled-background-color: light-dark(#4ecdc4, #006666),
     // tonal-background-color: light-dark(#ffe66d, #806600)
   ));
+
+  @include mat.table-overrides((
+    // row-item-container-height: 32px
+  ));
 }
 
 :root {

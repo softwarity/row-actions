@@ -10,7 +10,7 @@
   margin: 1rem 0;
 
   .table-placeholder {
-    height: 472px; // Approximate height of 5 rows table + header
+    height: calc(var(--row-height, 52px) * 8 + 56px); // 8 rows + header
     background: var(--mat-sys-surface-container);
     border-radius: 4px;
   }
@@ -117,7 +117,8 @@
   }
 
   // Inline variant select - same green style
-  .inline-variant-select {
+  .inline-variant-select,
+  .inline-height-select {
     display: inline;
     font-family: 'Courier New', Consolas, monospace;
     font-size: inherit;

@@ -11,7 +11,7 @@ export { RowActionsVariant } from './row-actions-toolbar.component';
   template: `
     @if (!disabled()) {
       <span style="display: flex; flex-grow: 1" cdkOverlayOrigin #trigger="cdkOverlayOrigin"></span>
-      <ng-template cdkConnectedOverlay [cdkConnectedOverlayPositions]="overlayPositions" [cdkConnectedOverlayOrigin]="trigger" [cdkConnectedOverlayOpen]="!!(open$ | async)">
+      <ng-template cdkConnectedOverlay [cdkConnectedOverlayPositions]="overlayPositions" [cdkConnectedOverlayOrigin]="trigger" [cdkConnectedOverlayOpen]="!!(open$ | async)" [cdkConnectedOverlayOffsetY]="offsetY">
         <row-actions-toolbar
           [variant]="rowActions()"
           [animatedFrom]="animatedFrom"
@@ -41,6 +41,7 @@ export class RowActionsDirective implements AfterViewInit {
   private readonly cdr = inject(ChangeDetectorRef);
 
   private matRowElement: HTMLElement | null = null;
+  private isNativeTable = false;
   private rowMouseMoveListener: (() => void) | null = null;
   private openTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private closeTimeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -85,6 +86,7 @@ export class RowActionsDirective implements AfterViewInit {
   marginRight = 0;
   flexGrow = 0;
   left = 0;
+  offsetY = 0;
 
   ngAfterViewInit(): void {
     const parentElement = this.el.nativeElement.parentElement;
@@ -116,6 +118,9 @@ export class RowActionsDirective implements AfterViewInit {
       return;
     }
 
+    // Detect if we're in a native table (tr element) vs component table (mat-row element)
+    this.isNativeTable = this.matRowElement.tagName.toLowerCase() === 'tr';
+
     // Register this instance
     RowActionsDirective.instances.add(this);
 
@@ -133,8 +138,23 @@ export class RowActionsDirective implements AfterViewInit {
       if (!this.open$.value && !this.openTimeoutId) {
         this.openTimeoutId = setTimeout(() => {
           this.openTimeoutId = null;
-          const currentParentStyle = getComputedStyle(parentElement);
-          this.heightToolbar = parseInt(currentParentStyle.height) - 1 + 'px';
+
+          if (this.isNativeTable && this.matRowElement) {
+            // Native table mode: calculate offsetY to center the overlay relative to the row
+            // This is needed because height: 100% doesn't work in native table cells
+            const rowRect = this.matRowElement.getBoundingClientRect();
+            const triggerRect = this.el.nativeElement.getBoundingClientRect();
+            const rowCenterY = rowRect.top + rowRect.height / 2;
+            const triggerCenterY = triggerRect.top + triggerRect.height / 2;
+            this.offsetY = rowCenterY - triggerCenterY - 1;
+            this.heightToolbar = rowRect.height - 1 + 'px';
+          } else {
+            // Component table mode: no offset needed, use parent element height
+            const currentParentStyle = getComputedStyle(parentElement);
+            this.heightToolbar = parseInt(currentParentStyle.height) - 1 + 'px';
+            this.offsetY = 0;
+          }
+
           this.open$.next(true);
           document.addEventListener('mousemove', this.documentMouseMoveListener);
         }, RowActionsDirective.OPEN_DELAY);

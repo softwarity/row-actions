@@ -38,7 +38,7 @@
         [rightDisabled]="rightDisabled()"
         [variant]="selectedVariant()"
       />
-    } @placeholder (minimum 2000ms) {
+    } @placeholder (minimum 1000ms) {
       <div class="table-placeholder">
         <app-loading-indicator withContainer diameter="64"/>
       </div>
@@ -50,7 +50,7 @@
         [rightDisabled]="rightDisabled()"
         [variant]="selectedVariant()"
       />
-    } @placeholder (minimum 2000ms) {
+    } @placeholder (minimum 1000ms) {
       <div class="table-placeholder">
         <app-loading-indicator withContainer diameter="64"/>
       </div>
@@ -66,6 +66,7 @@
 <span class="token selector">html</span> <span class="token punctuation">&#123;</span>
   <span class="token property">color-scheme</span><span class="token punctuation">:</span> light<span class="token punctuation">;</span>
   <span class="token keyword">&#64;include</span> <span class="token string">mat.</span><span class="token function">theme</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token property">color</span><span class="token punctuation">:</span> <span class="token string">mat.$</span><select class="inline-palette-select" [value]="selectedPalette()" (change)="onPaletteChange($any($event.target).value)"><option value="">violet</option><option value="red">red</option><option value="green">green</option><option value="blue">blue</option><option value="yellow">yellow</option><option value="cyan">cyan</option><option value="magenta">magenta</option><option value="orange">orange</option><option value="chartreuse">chartreuse</option><option value="spring-green">spring-green</option><option value="azure">azure</option><option value="violet">violet</option><option value="rose">rose</option></select><span class="token string">-palette</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">&#64;include</span> <span class="token string">mat.</span><span class="token function">table-overrides</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token property">row-item-container-height</span><span class="token punctuation">:</span> <select class="inline-height-select" [value]="rowHeight()" (change)="onRowHeightChange(+$any($event.target).value)"><option value="32">32px</option><option value="48">48px</option><option value="52">52px</option><option value="64">64px</option></select><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
   <span class="token selector">&amp; body.dark-mode</span> <span class="token punctuation">&#123;</span>
     <span class="token property">color-scheme</span><span class="token punctuation">:</span> dark<span class="token punctuation">;</span>

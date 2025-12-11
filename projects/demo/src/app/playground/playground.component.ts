@@ -29,6 +29,9 @@ export class PlaygroundComponent {
   // Table syntax: 'component' = <mat-table>, 'native' = <table mat-table>
   protected isNativeTable = signal(false);
 
+  // Row height
+  protected rowHeight = signal<32 | 48 | 52 | 64>(52);
+
   // Palette selection
   protected palettes = PALETTES;
   protected selectedPalette = signal<string>('');
@@ -45,6 +48,11 @@ export class PlaygroundComponent {
       this.filledOverride();
       this.tonalOverride();
       this.updateCustomBackground();
+    });
+
+    // React to row height changes
+    effect(() => {
+      this.updateRowHeight(this.rowHeight());
     });
   }
 
@@ -120,5 +128,27 @@ export class PlaygroundComponent {
 
   toggleTableSyntax(): void {
     this.isNativeTable.update(native => !native);
+  }
+
+  private rowHeightStyleElement: HTMLStyleElement | null = null;
+
+  private updateRowHeight(height: number): void {
+    if (!this.rowHeightStyleElement) {
+      this.rowHeightStyleElement = document.createElement('style');
+      document.head.appendChild(this.rowHeightStyleElement);
+    }
+    this.rowHeightStyleElement.textContent = `
+      .table-preview-wrapper {
+        --row-height: ${height}px;
+      }
+      .table-preview-wrapper mat-row,
+      .table-preview-wrapper tr[mat-row] {
+        --mat-table-row-item-container-height: var(--row-height);
+      }
+    `;
+  }
+
+  onRowHeightChange(height: number): void {
+    this.rowHeight.set(height as 32 | 48 | 52 | 64);
   }
 }
