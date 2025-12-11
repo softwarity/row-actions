@@ -6,6 +6,10 @@
   margin-bottom: 32px;
 }
 
+.table-preview-wrapper {
+  margin: 1rem 0;
+}
+
 // Fake PrismJS interactive code block
 .fake-prism {
   position: relative;
@@ -36,24 +40,6 @@
         height: 20px;
       }
     }
-  }
-
-  code {
-    font-family: 'Courier New', Consolas, monospace;
-    font-size: 0.9em;
-    line-height: 1.5;
-  }
-
-  // Prism token colors (matching prism-tomorrow theme)
-  .token {
-    &.comment { color: #999; }
-    &.keyword { color: #cc99cd; }
-    &.string { color: #7ec699; }
-    &.selector { color: #f8c555; }
-    &.property { color: #f08d49; }
-    &.function { color: #6196cc; }
-    &.variable { color: #ccc; }
-    &.punctuation { color: #ccc; }
   }
 
   // Override lines with checkbox and color pickers

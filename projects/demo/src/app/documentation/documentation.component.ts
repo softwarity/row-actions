@@ -1,6 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component } from '@angular/core';
-
-declare const Prism: any;
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'app-documentation',
@@ -8,8 +6,4 @@ declare const Prism: any;
   templateUrl: './documentation.component.html',
   styleUrl: './documentation.component.scss'
 })
-export class DocumentationComponent implements AfterViewInit {
-  ngAfterViewInit(): void {
-    Prism.highlightAll();
-  }
-}
+export class DocumentationComponent {}

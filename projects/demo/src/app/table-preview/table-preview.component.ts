@@ -38,7 +38,11 @@ const USERS_DATA: User[] = [
     BadgeComponent,
   ],
   templateUrl: './table-preview.component.html',
-  styleUrl: './table-preview.component.scss'
+  styles: [`
+  .mat-column-name {
+    border-left: 1px dashed var(--mat-sys-outline-variant);
+  }
+  `],
 })
 export class TablePreviewComponent {
   private snackBar = inject(MatSnackBar);
