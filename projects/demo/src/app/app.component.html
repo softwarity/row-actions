@@ -44,11 +44,11 @@
       The buttons appear with a smooth animation from the edge of the cell.
     </p>
 
-    <!-- Playground (Material) -->
-    <app-playground />
+    <!-- Playground (lazy-loaded) -->
+    <router-outlet name="playground" />
 
-    <!-- Documentation (Pure HTML/CSS) -->
-    <app-documentation />
+    <!-- Documentation (lazy-loaded) -->
+    <router-outlet name="documentation" />
 
     <!-- Card Footer -->
     <footer class="card-footer">
