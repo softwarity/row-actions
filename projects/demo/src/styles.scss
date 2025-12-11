@@ -4,6 +4,7 @@
 
 // Material 3 Theme
 html {
+  @include mat.system-classes();
   color-scheme: light;
   @include mat.theme((color: mat.$violet-palette));
 
@@ -61,9 +62,9 @@ html {
   }
 
   @include row-actions.overrides((
-    // container-background-color: light-dark(#00ff95, #ff0000),
-    // filled-background-color: light-dark(#00ff95, #ff0000),
-    // tonal-background-color: light-dark(#00ff95, #ff0000)
+    // container-background-color: light-dark(#ff6b6b, #8b0000),
+    // filled-background-color: light-dark(#4ecdc4, #006666),
+    // tonal-background-color: light-dark(#ffe66d, #806600)
   ));
 }
 

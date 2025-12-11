@@ -8,6 +8,12 @@
 
 .table-preview-wrapper {
   margin: 1rem 0;
+
+  .table-placeholder {
+    height: 472px; // Approximate height of 5 rows table + header
+    background: var(--mat-sys-surface-container);
+    border-radius: 4px;
+  }
 }
 
 // Fake PrismJS interactive code block
@@ -16,7 +22,8 @@
 
   // HTML fragment with toggle button in top-right corner
   &.html-fragment {
-    .color-scheme-toggle {
+    .color-scheme-toggle,
+    .table-syntax-toggle {
       position: absolute;
       top: 8px;
       right: 8px;

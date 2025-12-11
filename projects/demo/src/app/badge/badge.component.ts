@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-badge',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<span class="badge" [attr.data-type]="type()">{{ label() }}</span>`,
   styleUrl: './badge.component.scss'
 })

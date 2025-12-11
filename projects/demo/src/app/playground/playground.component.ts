@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component, effect, signal } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { TablePreviewComponent } from '../table-preview/table-preview.component';
+import { TablePreviewNativeComponent } from '../table-preview-native/table-preview-native.component';
+import { LoadingIndicatorComponent } from '../loading-indicator/loading-indicator.component';
 
 const PALETTES = [
   'red', 'green', 'blue', 'yellow', 'cyan', 'magenta',
@@ -8,21 +10,24 @@ const PALETTES = [
 ] as const;
 
 @Component({
-  selector: 'app-playground',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatIconModule,
     TablePreviewComponent,
+    TablePreviewNativeComponent,
+    LoadingIndicatorComponent,
   ],
   templateUrl: './playground.component.html',
   styleUrl: './playground.component.scss'
 })
 export class PlaygroundComponent {
-  // Disabled state for each rowActions (left and right)
   protected leftDisabled = signal(false);
   protected rightDisabled = signal(false);
+  protected selectedVariant = signal<'' | 'filled' | 'tonal'>('');
 
   protected isDarkMode = signal(document.body.classList.contains('dark-mode'));
+
+  // Table syntax: 'component' = <mat-table>, 'native' = <table mat-table>
+  protected isNativeTable = signal(false);
 
   // Palette selection
   protected palettes = PALETTES;
@@ -32,9 +37,6 @@ export class PlaygroundComponent {
   protected containerOverride = signal({ enabled: false, light: '#ff6b6b', dark: '#8b0000' }); // Red tones
   protected filledOverride = signal({ enabled: false, light: '#4ecdc4', dark: '#006666' });    // Cyan tones
   protected tonalOverride = signal({ enabled: false, light: '#ffe66d', dark: '#806600' });     // Yellow tones
-
-  // Variant selection for interactive HTML
-  protected selectedVariant = signal<'' | 'filled' | 'tonal'>('');
 
   constructor() {
     // React to config changes to update custom background
@@ -62,13 +64,13 @@ export class PlaygroundComponent {
       }
       const lines: string[] = [];
       if (container.enabled) {
-        lines.push(`--row-actions-background: light-dark(${container.light}, ${container.dark});`);
+        lines.push(`--row-actions-container-background-color: light-dark(${container.light}, ${container.dark});`);
       }
       if (filled.enabled) {
-        lines.push(`--row-actions-filled-background: light-dark(${filled.light}, ${filled.dark});`);
+        lines.push(`--row-actions-filled-background-color: light-dark(${filled.light}, ${filled.dark});`);
       }
       if (tonal.enabled) {
-        lines.push(`--row-actions-tonal-background: light-dark(${tonal.light}, ${tonal.dark});`);
+        lines.push(`--row-actions-tonal-background-color: light-dark(${tonal.light}, ${tonal.dark});`);
       }
       this.styleElement.textContent = `:root { ${lines.join(' ')} }`;
     } else if (this.styleElement) {
@@ -114,5 +116,9 @@ export class PlaygroundComponent {
 
   onVariantChange(variant: '' | 'filled' | 'tonal'): void {
     this.selectedVariant.set(variant);
+  }
+
+  toggleTableSyntax(): void {
+    this.isNativeTable.update(native => !native);
   }
 }

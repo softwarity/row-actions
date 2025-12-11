@@ -2,6 +2,12 @@
 
 ## 3.0.4
 
+### Theming
+- **SCSS tokens renamed** - Added `-color` suffix for consistency:
+  - `container-background-color`
+  - `filled-background-color`
+  - `tonal-background-color`
+
 ---
 
 ## 3.0.3

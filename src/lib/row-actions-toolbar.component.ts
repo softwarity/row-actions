@@ -42,14 +42,14 @@ function injectKeyframes(doc: Document): void {
       gap: 0.5em;
       padding: 0 8px;
       margin-top: 1px;
-      background: var(--row-actions-background, var(--mat-sys-surface-container));
+      background: var(--row-actions-container-background-color, var(--mat-sys-surface-container));
       color: var(--mat-sys-on-surface);
     }
     :host(.row-actions-filled) {
-      background: var(--row-actions-filled-background, var(--mat-sys-primary-container));
+      background: var(--row-actions-filled-background-color, var(--mat-sys-primary-container));
     }
     :host(.row-actions-tonal) {
-      background: var(--row-actions-tonal-background, var(--mat-sys-secondary-container));
+      background: var(--row-actions-tonal-background-color, var(--mat-sys-secondary-container));
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

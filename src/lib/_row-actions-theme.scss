@@ -20,12 +20,12 @@
   $merged: map.merge($defaults, $tokens);
 
   @if map.get($merged, container-background-color) {
-    --row-actions-background: #{map.get($merged, container-background-color)};
+    --row-actions-container-background-color: #{map.get($merged, container-background-color)};
   }
   @if map.get($merged, filled-background-color) {
-    --row-actions-filled-background: #{map.get($merged, filled-background-color)};
+    --row-actions-filled-background-color: #{map.get($merged, filled-background-color)};
   }
   @if map.get($merged, tonal-background-color) {
-    --row-actions-tonal-background: #{map.get($merged, tonal-background-color)};
+    --row-actions-tonal-background-color: #{map.get($merged, tonal-background-color)};
   }
 }
