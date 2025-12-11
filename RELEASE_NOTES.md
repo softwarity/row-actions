@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.0.5
+
+---
+
 ## 3.0.4
 
 ### Features
