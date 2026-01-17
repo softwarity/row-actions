@@ -1,8 +1,9 @@
-import { Component, effect, signal } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Component, effect, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { TablePreviewComponent } from '../table-preview/table-preview.component';
 import { TablePreviewNativeComponent } from '../table-preview-native/table-preview-native.component';
 import { LoadingIndicatorComponent } from '@softwarity/loading-indicator';
+import '@softwarity/interactive-code';
 
 const PALETTES = [
   'red', 'green', 'blue', 'yellow', 'cyan', 'magenta',
@@ -10,6 +11,7 @@ const PALETTES = [
 ] as const;
 
 @Component({
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     MatIconModule,
     TablePreviewComponent,
@@ -87,31 +89,74 @@ export class PlaygroundComponent {
     }
   }
 
-  toggleOverride(variant: 'container' | 'filled' | 'tonal'): void {
-    const signalMap = {
-      container: this.containerOverride,
-      filled: this.filledOverride,
-      tonal: this.tonalOverride
-    };
-    signalMap[variant].update(v => ({ ...v, enabled: !v.enabled }));
-  }
-
-  updateOverrideColor(variant: 'container' | 'filled' | 'tonal', mode: 'light' | 'dark', event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
-    const signalMap = {
-      container: this.containerOverride,
-      filled: this.filledOverride,
-      tonal: this.tonalOverride
-    };
-    signalMap[variant].update(v => ({ ...v, [mode]: value }));
-  }
-
   toggleColorScheme(): void {
     this.isDarkMode.update(dark => !dark);
     document.body.classList.toggle('dark-mode', this.isDarkMode());
   }
 
-  onPaletteChange(palette: string): void {
+  toggleTableSyntax(): void {
+    this.isNativeTable.update(native => !native);
+  }
+
+  onBindingChange(event: Event): void {
+    const target = event.target as HTMLElement;
+    const key = target.getAttribute('key');
+    const value = (target as unknown as { value: unknown }).value;
+
+    switch (key) {
+      case 'darkMode':
+        this.isDarkMode.set(value == 'dark');
+        document.body.classList.toggle('dark-mode', value == 'dark');
+        break;
+      case 'nativeTable':
+        this.isNativeTable.set(value as boolean);
+        break;
+      case 'leftDisabled':
+        this.leftDisabled.set(value as boolean);
+        break;
+      case 'rightDisabled':
+        this.rightDisabled.set(value as boolean);
+        break;
+      case 'variant':
+        this.selectedVariant.set(value as '' | 'filled' | 'tonal');
+        break;
+      case 'palette':
+        this.onPaletteChange(value as string);
+        break;
+      case 'rowHeight':
+        this.rowHeight.set(parseInt(value as string, 10) as 32 | 48 | 52 | 64);
+        break;
+      case 'containerEnabled':
+        this.containerOverride.update(v => ({ ...v, enabled: value as boolean }));
+        break;
+      case 'containerLight':
+        this.containerOverride.update(v => ({ ...v, light: value as string }));
+        break;
+      case 'containerDark':
+        this.containerOverride.update(v => ({ ...v, dark: value as string }));
+        break;
+      case 'filledEnabled':
+        this.filledOverride.update(v => ({ ...v, enabled: value as boolean }));
+        break;
+      case 'filledLight':
+        this.filledOverride.update(v => ({ ...v, light: value as string }));
+        break;
+      case 'filledDark':
+        this.filledOverride.update(v => ({ ...v, dark: value as string }));
+        break;
+      case 'tonalEnabled':
+        this.tonalOverride.update(v => ({ ...v, enabled: value as boolean }));
+        break;
+      case 'tonalLight':
+        this.tonalOverride.update(v => ({ ...v, light: value as string }));
+        break;
+      case 'tonalDark':
+        this.tonalOverride.update(v => ({ ...v, dark: value as string }));
+        break;
+    }
+  }
+
+  private onPaletteChange(palette: string): void {
     const html = document.documentElement;
     // Remove all palette classes
     PALETTES.forEach(p => html.classList.remove(p));
@@ -120,14 +165,6 @@ export class PlaygroundComponent {
       html.classList.add(palette);
     }
     this.selectedPalette.set(palette);
-  }
-
-  onVariantChange(variant: '' | 'filled' | 'tonal'): void {
-    this.selectedVariant.set(variant);
-  }
-
-  toggleTableSyntax(): void {
-    this.isNativeTable.update(native => !native);
   }
 
   private rowHeightStyleElement: HTMLStyleElement | null = null;
@@ -146,9 +183,5 @@ export class PlaygroundComponent {
         --mat-table-row-item-container-height: var(--row-height);
       }
     `;
-  }
-
-  onRowHeightChange(height: number): void {
-    this.rowHeight.set(height as 32 | 48 | 52 | 64);
   }
 }
