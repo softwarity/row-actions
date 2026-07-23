@@ -2,7 +2,7 @@
   "name": "@softwarity/row-actions",
   "version": "3.0.4",
   "author": "Softwarity",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "description": "Angular Material table row actions component with collapsible toolbar",
   "repository": {
     "type": "git",

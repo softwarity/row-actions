@@ -11,7 +11,7 @@
     <img src="https://img.shields.io/npm/v/@softwarity/row-actions?color=blue&label=npm" alt="npm version">
   </a>
   <a href="https://github.com/softwarity/row-actions/blob/main/LICENSE">
-    <img src="https://img.shields.io/badge/license-MIT-blue" alt="license">
+    <img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="license">
   </a>
   <a href="https://github.com/softwarity/row-actions/actions/workflows/main.yml">
     <img src="https://github.com/softwarity/row-actions/actions/workflows/main.yml/badge.svg" alt="build status">
@@ -220,4 +220,4 @@ To customize the icon buttons, use Angular Material's `matIconButton` overrides 
 
 ## License
 
-MIT
+Apache-2.0
