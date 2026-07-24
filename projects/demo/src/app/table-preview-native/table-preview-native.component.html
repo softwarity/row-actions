@@ -7,7 +7,7 @@
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef>Name</th>
     <td mat-cell *matCellDef="let user">
-      <span rowActions [disabled]="leftDisabled()">
+      <span rowActions [closeOnClick]="closeOnClick()" [disabled]="leftDisabled()">
         <button matIconButton (click)="onEdit(user)" title="Edit">
           <mat-icon>edit</mat-icon>
         </button>
@@ -39,7 +39,7 @@
     <th mat-header-cell *matHeaderCellDef>Actions</th>
     <td mat-cell *matCellDef="let user">
       {{ user.lastUpdated }}
-      <span rowActions [rowActions]="variant()" [disabled]="rightDisabled()">
+      <span rowActions [rowActions]="variant()" [closeOnClick]="closeOnClick()" [disabled]="rightDisabled()">
         <button matIconButton (click)="onView(user)" title="View">
           <mat-icon>visibility</mat-icon>
         </button>

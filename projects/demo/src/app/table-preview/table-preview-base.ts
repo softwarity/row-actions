@@ -9,6 +9,9 @@ export abstract class TablePreviewBase {
   readonly leftDisabled = input(false);
   readonly rightDisabled = input(false);
   readonly variant = input<'' | 'filled' | 'tonal'>('');
+  // closeOnClick (3.1.0): clicking a row closes every toolbar. Toggleable in
+  // the playground so the behaviour difference is visible.
+  readonly closeOnClick = input(true);
 
   displayedColumns: string[] = ['id', 'name', 'email', 'role', 'status', 'actions'];
   dataSource = USERS_DATA;

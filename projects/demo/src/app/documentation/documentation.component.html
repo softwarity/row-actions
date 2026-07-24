@@ -59,6 +59,34 @@ npm install @softwarity/row-actions</textarea></interactive-code>
             <td><code>false</code></td>
             <td>Disables the component (hides it completely)</td>
           </tr>
+          <tr>
+            <td><code>closeOnClick</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>Closes every toolbar when the row is clicked — a row click usually opens a drawer or navigates, and no toolbar should stay floating above it</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Methods</h4>
+    <div class="api-table-wrapper">
+      <table class="api-table">
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>close()</code></td>
+            <td>Immediately closes this toolbar and cancels any pending open</td>
+          </tr>
+          <tr>
+            <td><code>RowActionsDirective.closeAll()</code> <sub>static</sub></td>
+            <td>Closes every toolbar on the page — call it when a row click opens a drawer or dialog</td>
+          </tr>
         </tbody>
       </table>
     </div>

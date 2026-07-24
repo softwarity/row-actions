@@ -25,6 +25,8 @@ export class PlaygroundComponent {
   protected leftDisabled = signal(false);
   protected rightDisabled = signal(false);
   protected selectedVariant = signal<'' | 'filled' | 'tonal'>('');
+  // closeOnClick (3.1.0): a row click closes every toolbar — toggleable to see it.
+  protected closeOnClick = signal(true);
 
   protected isDarkMode = signal(document.body.classList.contains('dark-mode'));
 
@@ -116,6 +118,9 @@ export class PlaygroundComponent {
         break;
       case 'rightDisabled':
         this.rightDisabled.set(value as boolean);
+        break;
+      case 'closeOnClick':
+        this.closeOnClick.set(value as boolean);
         break;
       case 'variant':
         this.selectedVariant.set(value as '' | 'filled' | 'tonal');

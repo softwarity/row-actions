@@ -33,7 +33,7 @@
     ...
     <mat-cell>  <!-- Toolbar from RIGHT -->
       &#123;&#123; user.lastUpdated &#125;&#125;
-      <span rowActions="${variant}" [disabled]="${rightDisabled}">
+      <span rowActions="${variant}" [closeOnClick]="${closeOnClick}" [disabled]="${rightDisabled}">
         <button matIconButton>...</button>
       </span>
     </mat-cell>
@@ -43,6 +43,7 @@
       <code-binding key="nativeTable" type="boolean" value="false"></code-binding>
       <code-binding key="leftDisabled" type="boolean" value="false"></code-binding>
       <code-binding key="rightDisabled" type="boolean" value="false"></code-binding>
+      <code-binding key="closeOnClick" type="boolean" value="true"></code-binding>
       <code-binding key="variant" type="select" carousel value="" options=",filled,tonal"></code-binding>
     </interactive-code>
   } @else {
@@ -61,7 +62,7 @@
     ...
     <td mat-cell>  <!-- Toolbar from RIGHT -->
       &#123;&#123; user.lastUpdated &#125;&#125;
-      <span rowActions="${variant}" [disabled]="${rightDisabled}">
+      <span rowActions="${variant}" [closeOnClick]="${closeOnClick}" [disabled]="${rightDisabled}">
         <button matIconButton>...</button>
       </span>
     </td>
@@ -71,6 +72,7 @@
       <code-binding key="nativeTable" type="boolean" value="true"></code-binding>
       <code-binding key="leftDisabled" type="boolean" value="false"></code-binding>
       <code-binding key="rightDisabled" type="boolean" value="false"></code-binding>
+      <code-binding key="closeOnClick" type="boolean" value="true"></code-binding>
       <code-binding key="variant" type="select" carousel value="" options=",filled,tonal"></code-binding>
     </interactive-code>
   }
@@ -86,6 +88,7 @@
           [leftDisabled]="leftDisabled()"
           [rightDisabled]="rightDisabled()"
           [variant]="selectedVariant()"
+          [closeOnClick]="closeOnClick()"
         />
       } @placeholder (minimum 1000ms) {
         <div class="table-placeholder">
@@ -98,6 +101,7 @@
           [leftDisabled]="leftDisabled()"
           [rightDisabled]="rightDisabled()"
           [variant]="selectedVariant()"
+          [closeOnClick]="closeOnClick()"
         />
       } @placeholder (minimum 1000ms) {
         <div class="table-placeholder">
