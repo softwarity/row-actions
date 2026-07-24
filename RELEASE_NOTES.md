@@ -2,6 +2,10 @@
 
 ## NEXT RELEASE
 
+---
+
+## 3.1.0
+
 ### Features
 - **`close()` method** - Programmatically close a toolbar; also cancels any pending open
 - **`RowActionsDirective.closeAll()`** (static) - Close every toolbar on the page (e.g. before opening a drawer from a row click)
