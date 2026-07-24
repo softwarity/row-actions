@@ -146,3 +146,15 @@ h2 {
   border-bottom: 1px solid var(--border-color);
   color: var(--text-primary);
 }
+
+/* Interactive-code bindings in the hand-drawn style (sketchy ellipse around
+   each editable value) instead of the default wavy underline. */
+interactive-code::part(interactive) {
+  text-decoration: none;
+  border: 1.5px solid var(--code-interactive-border-color);
+  border-radius: 55% 45% 50% 40% / 40% 50% 45% 55%;
+  padding: 2px 8px;
+}
+interactive-code::part(interactive):hover {
+  box-shadow: 0 0 0 1px var(--code-interactive-border-color);
+}

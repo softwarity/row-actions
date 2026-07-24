@@ -32,15 +32,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
-      - name: Remove local row-actions reference and install from npm
-        run: |
-          npm remove @softwarity/row-actions
-          npm i @softwarity/row-actions
+      - name: Install dependencies
+        # dist/ must exist before install: package.json links @softwarity/row-actions
+        # as "file:dist" (the locally built library).
+        run: mkdir -p dist && npm ci
 
-      - name: Remove path mapping for demo
-        run: sed -i '/"paths"/,/}/d' projects/demo/tsconfig.app.json
+      # The demo consumes the LOCAL library (tsconfig paths → ../../dist), so the
+      # deployed page always reflects the current source, not the npm release.
+      - name: Build the library
+        run: npm run build
 
       - name: Build demo for GitHub Pages
         run: npm run build:demo -- --base-href /row-actions/

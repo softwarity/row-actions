@@ -43,7 +43,7 @@
       <code-binding key="nativeTable" type="boolean" value="false"></code-binding>
       <code-binding key="leftDisabled" type="boolean" value="false"></code-binding>
       <code-binding key="rightDisabled" type="boolean" value="false"></code-binding>
-      <code-binding key="variant" type="select" value="" options=",filled,tonal"></code-binding>
+      <code-binding key="variant" type="select" carousel value="" options=",filled,tonal"></code-binding>
     </interactive-code>
   } @else {
     <interactive-code language="html" (change)="onBindingChange($event)"><textarea>
@@ -71,7 +71,7 @@
       <code-binding key="nativeTable" type="boolean" value="true"></code-binding>
       <code-binding key="leftDisabled" type="boolean" value="false"></code-binding>
       <code-binding key="rightDisabled" type="boolean" value="false"></code-binding>
-      <code-binding key="variant" type="select" value="" options=",filled,tonal"></code-binding>
+      <code-binding key="variant" type="select" carousel value="" options=",filled,tonal"></code-binding>
     </interactive-code>
   }
   <button class="table-syntax-toggle" (click)="toggleTableSyntax()" [title]="isNativeTable() ? 'Switch to &lt;mat-table&gt;' : 'Switch to &lt;table mat-table&gt;'">
@@ -128,7 +128,7 @@ html {
     ${tonalEnabled}tonal-background-color: light-dark(${tonalLight}, ${tonalDark})
   ));
 }</textarea>
-    <code-binding key="palette" type="select" value="violet" options="red,green,blue,yellow,cyan,magenta,orange,chartreuse,spring-green,azure,violet,rose"></code-binding>
+    <code-binding key="palette" type="select" carousel value="violet" options="red,green,blue,yellow,cyan,magenta,orange,chartreuse,spring-green,azure,violet,rose"></code-binding>
     <code-binding key="rowHeight" type="select" value="52" options="32,48,52,64"></code-binding>
     <code-binding key="containerEnabled" type="comment" value="false"></code-binding>
     <code-binding key="containerLight" type="color" value="#ff6b6b"></code-binding>
