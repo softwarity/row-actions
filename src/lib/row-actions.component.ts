@@ -56,16 +56,19 @@ export class RowActionsDirective implements AfterViewInit {
     for (const instance of RowActionsDirective.instances) {
       // Only affect instances from OTHER rows, not the same row
       if (instance.matRowElement !== except.matRowElement) {
-        // Cancel pending open
-        if (instance.openTimeoutId) {
-          clearTimeout(instance.openTimeoutId);
-          instance.openTimeoutId = null;
-        }
-        // Close if open
-        if (instance.open$.value) {
-          instance.closeImmediately();
-        }
+        instance.close();
       }
+    }
+  }
+
+  /**
+   * Closes every row-actions toolbar and cancels pending opens. Call it when a
+   * row click opens a drawer or dialog, so no toolbar stays floating above the
+   * overlay.
+   */
+  static closeAll(): void {
+    for (const instance of RowActionsDirective.instances) {
+      instance.close();
     }
   }
 
@@ -82,6 +85,13 @@ export class RowActionsDirective implements AfterViewInit {
   readonly disabled = input<boolean | null>(false);
 
   readonly rowActions = input<RowActionsVariant>('');
+
+  /**
+   * Closes the toolbar when the row itself is clicked (default). A row click
+   * usually navigates or opens a drawer/dialog — the toolbar must not stay
+   * floating above it. Set to false to keep the toolbar open on row clicks.
+   */
+  readonly closeOnClick = input<boolean>(true);
 
   marginRight = 0;
   flexGrow = 0;
@@ -162,6 +172,7 @@ export class RowActionsDirective implements AfterViewInit {
     };
 
     this.matRowElement.addEventListener('mousemove', this.rowMouseMoveListener);
+    this.matRowElement.addEventListener('click', this.rowClickListener);
 
     // Cleanup on destroy
     this.destroyRef.onDestroy(() => {
@@ -174,13 +185,29 @@ export class RowActionsDirective implements AfterViewInit {
         clearTimeout(this.closeTimeoutId);
       }
       document.removeEventListener('mousemove', this.documentMouseMoveListener);
-      if (this.matRowElement && this.rowMouseMoveListener) {
-        this.matRowElement.removeEventListener('mousemove', this.rowMouseMoveListener);
+      if (this.matRowElement) {
+        if (this.rowMouseMoveListener) {
+          this.matRowElement.removeEventListener('mousemove', this.rowMouseMoveListener);
+        }
+        this.matRowElement.removeEventListener('click', this.rowClickListener);
       }
     });
   }
 
-  private closeImmediately(): void {
+  // A click on the row closes the toolbar (closeOnClick) — the click's own
+  // handler typically opens a drawer or navigates, and every toolbar on the
+  // page must clear out of its way, not just this row's.
+  private readonly rowClickListener = (): void => {
+    if (this.closeOnClick()) {
+      RowActionsDirective.closeAll();
+    }
+  };
+
+  /**
+   * Closes this toolbar immediately and cancels any pending open, so it cannot
+   * appear (or reappear) after a programmatic action such as opening a drawer.
+   */
+  close(): void {
     if (this.openTimeoutId) {
       clearTimeout(this.openTimeoutId);
       this.openTimeoutId = null;

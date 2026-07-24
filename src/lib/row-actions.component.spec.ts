@@ -233,7 +233,7 @@ describe('RowActionsDirective', () => {
 
     it('should have closed state initially', () => {
       const component = rowActionDebugElement.componentInstance as RowActionsDirective;
-      expect(component.open$.getValue()).toBeFalse();
+      expect(component.open$.getValue()).toBe(false);
     });
   });
 
@@ -289,13 +289,13 @@ describe('RowActionsDirective', () => {
       const component = rowActionDebugElement.componentInstance as RowActionsDirective;
       const matRow = fixture.debugElement.query(By.css('mat-row'));
 
-      expect(component.open$.getValue()).toBeFalse();
+      expect(component.open$.getValue()).toBe(false);
 
       matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
       await waitForTimeout(100); // Wait for OPEN_DELAY (50ms) + buffer
       fixture.detectChanges();
 
-      expect(component.open$.getValue()).toBeTrue();
+      expect(component.open$.getValue()).toBe(true);
     });
 
     it('should close when mouse leaves row bounds', async () => {
@@ -306,7 +306,7 @@ describe('RowActionsDirective', () => {
       matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
       await waitForTimeout(100); // Wait for OPEN_DELAY
       fixture.detectChanges();
-      expect(component.open$.getValue()).toBeTrue();
+      expect(component.open$.getValue()).toBe(true);
 
       // Simulate mouse move outside bounds
       const mouseMoveEvent = new MouseEvent('mousemove', {
@@ -317,7 +317,68 @@ describe('RowActionsDirective', () => {
       await waitForTimeout(100); // Wait for CLOSE_DELAY
       fixture.detectChanges();
 
-      expect(component.open$.getValue()).toBeFalse();
+      expect(component.open$.getValue()).toBe(false);
+    });
+
+    it('should close programmatically with close()', async () => {
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
+      const matRow = fixture.debugElement.query(By.css('mat-row'));
+
+      // Open first
+      matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(100); // Wait for OPEN_DELAY
+      fixture.detectChanges();
+      expect(component.open$.getValue()).toBe(true);
+
+      component.close();
+      fixture.detectChanges();
+
+      expect(component.open$.getValue()).toBe(false);
+    });
+
+    it('close() should cancel a pending open', async () => {
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
+      const matRow = fixture.debugElement.query(By.css('mat-row'));
+
+      // Schedule an open (OPEN_DELAY not yet elapsed), then close before it fires
+      matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      component.close();
+      await waitForTimeout(100); // Longer than OPEN_DELAY
+      fixture.detectChanges();
+
+      expect(component.open$.getValue()).toBe(false);
+    });
+
+    it('should close on row click by default (closeOnClick)', async () => {
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
+      const matRow = fixture.debugElement.query(By.css('mat-row'));
+
+      // Open first
+      matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(100); // Wait for OPEN_DELAY
+      fixture.detectChanges();
+      expect(component.open$.getValue()).toBe(true);
+
+      matRow.nativeElement.dispatchEvent(new MouseEvent('click'));
+      fixture.detectChanges();
+
+      expect(component.open$.getValue()).toBe(false);
+    });
+
+    it('closeAll() should close every open toolbar', async () => {
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
+      const matRow = fixture.debugElement.query(By.css('mat-row'));
+
+      // Open first
+      matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(100); // Wait for OPEN_DELAY
+      fixture.detectChanges();
+      expect(component.open$.getValue()).toBe(true);
+
+      RowActionsDirective.closeAll();
+      fixture.detectChanges();
+
+      expect(component.open$.getValue()).toBe(false);
     });
   });
 
@@ -392,7 +453,7 @@ describe('RowActionsDirective', () => {
 
       fixture.destroy();
 
-      expect(completed).toBeTrue();
+      expect(completed).toBe(true);
     });
   });
 
@@ -455,9 +516,9 @@ describe('RowActionsDirective', () => {
       const component1 = rowActionElements[1].componentInstance as RowActionsDirective;
       const component2 = rowActionElements[2].componentInstance as RowActionsDirective;
 
-      expect(component0.open$.getValue()).toBeFalse();
-      expect(component1.open$.getValue()).toBeTrue();
-      expect(component2.open$.getValue()).toBeFalse();
+      expect(component0.open$.getValue()).toBe(false);
+      expect(component1.open$.getValue()).toBe(true);
+      expect(component2.open$.getValue()).toBe(false);
     });
 
     it('should close previous row-actions when hovering another row', async () => {
@@ -480,15 +541,15 @@ describe('RowActionsDirective', () => {
       const component0 = rowActionElements[0].componentInstance as RowActionsDirective;
       const component1 = rowActionElements[1].componentInstance as RowActionsDirective;
 
-      expect(component0.open$.getValue()).toBeTrue();
+      expect(component0.open$.getValue()).toBe(true);
 
       // Now hover on the second row - this should cancel row 0 and open row 1
       matRows[1].nativeElement.dispatchEvent(new MouseEvent('mousemove'));
       await waitForTimeout(100); // Wait for OPEN_DELAY
       fixture.detectChanges();
 
-      expect(component0.open$.getValue()).toBeFalse();
-      expect(component1.open$.getValue()).toBeTrue();
+      expect(component0.open$.getValue()).toBe(false);
+      expect(component1.open$.getValue()).toBe(true);
     });
   });
 
@@ -552,12 +613,12 @@ describe('RowActionsDirective', () => {
 
       matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
       // Check immediately - should NOT be open yet
-      expect(component.open$.getValue()).toBeFalse();
+      expect(component.open$.getValue()).toBe(false);
 
       // Wait for debounce
       await waitForTimeout(100);
       fixture.detectChanges();
-      expect(component.open$.getValue()).toBeTrue();
+      expect(component.open$.getValue()).toBe(true);
     });
 
     it('should cancel open if entering another row before delay', async () => {
@@ -584,7 +645,7 @@ describe('RowActionsDirective', () => {
       fixture.detectChanges();
 
       // Row 0 should never have opened
-      expect(component0.open$.getValue()).toBeFalse();
+      expect(component0.open$.getValue()).toBe(false);
     });
 
     it('should cancel pending close if mouse re-enters row', async () => {
@@ -604,7 +665,7 @@ describe('RowActionsDirective', () => {
       matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
       await waitForTimeout(100);
       fixture.detectChanges();
-      expect(component.open$.getValue()).toBeTrue();
+      expect(component.open$.getValue()).toBe(true);
 
       // Start leaving (triggers close timeout)
       document.dispatchEvent(new MouseEvent('mousemove', { clientX: -100, clientY: -100 }));
@@ -616,7 +677,7 @@ describe('RowActionsDirective', () => {
       fixture.detectChanges();
 
       // Should still be open
-      expect(component.open$.getValue()).toBeTrue();
+      expect(component.open$.getValue()).toBe(true);
     });
   });
 
@@ -646,8 +707,8 @@ describe('RowActionsDirective', () => {
       fixture.detectChanges();
 
       // Row 0 should never have opened, row 1 should be open
-      expect(component0.open$.getValue()).toBeFalse();
-      expect(component1.open$.getValue()).toBeTrue();
+      expect(component0.open$.getValue()).toBe(false);
+      expect(component1.open$.getValue()).toBe(true);
     });
 
     it('should immediately close other rows when opening a new one', async () => {
@@ -669,18 +730,18 @@ describe('RowActionsDirective', () => {
       matRows[0].nativeElement.dispatchEvent(new MouseEvent('mousemove'));
       await waitForTimeout(100);
       fixture.detectChanges();
-      expect(component0.open$.getValue()).toBeTrue();
+      expect(component0.open$.getValue()).toBe(true);
 
       // Move to row 1 - row 0 should close immediately
       matRows[1].nativeElement.dispatchEvent(new MouseEvent('mousemove'));
       fixture.detectChanges();
 
       // Row 0 should be closed immediately (no debounce for cross-row close)
-      expect(component0.open$.getValue()).toBeFalse();
+      expect(component0.open$.getValue()).toBe(false);
 
       await waitForTimeout(100);
       fixture.detectChanges();
-      expect(component1.open$.getValue()).toBeTrue();
+      expect(component1.open$.getValue()).toBe(true);
     });
   });
 
@@ -758,7 +819,7 @@ describe('RowActionsDirective', () => {
         await waitForTimeout(100);
         fixture.detectChanges();
 
-        expect(component.open$.getValue()).toBeTrue();
+        expect(component.open$.getValue()).toBe(true);
         expect(component.offsetY).toBe(0);
       });
     });
@@ -782,7 +843,7 @@ describe('RowActionsDirective', () => {
         await waitForTimeout(100);
         fixture.detectChanges();
 
-        expect(component.open$.getValue()).toBeTrue();
+        expect(component.open$.getValue()).toBe(true);
         // In native mode, offsetY is calculated to center the overlay
         // The exact value depends on the layout, but it should be set
         expect(component.offsetY).toBeDefined();
@@ -801,13 +862,13 @@ describe('RowActionsDirective', () => {
         const component = rowActionDebugElement.componentInstance as RowActionsDirective;
         const matRow = fixture.debugElement.query(By.css('tr[mat-row]'));
 
-        expect(component.open$.getValue()).toBeFalse();
+        expect(component.open$.getValue()).toBe(false);
 
         matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
         await waitForTimeout(100);
         fixture.detectChanges();
 
-        expect(component.open$.getValue()).toBeTrue();
+        expect(component.open$.getValue()).toBe(true);
       });
 
       it('should detect right position in native table', async () => {
@@ -880,7 +941,7 @@ describe('RowActionsDirective', () => {
         matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
         await waitForTimeout(100);
         fixture.detectChanges();
-        expect(component.open$.getValue()).toBeTrue();
+        expect(component.open$.getValue()).toBe(true);
 
         // Simulate mouse move outside bounds
         const mouseMoveEvent = new MouseEvent('mousemove', {
@@ -891,7 +952,7 @@ describe('RowActionsDirective', () => {
         await waitForTimeout(100);
         fixture.detectChanges();
 
-        expect(component.open$.getValue()).toBeFalse();
+        expect(component.open$.getValue()).toBe(false);
       });
     });
   });

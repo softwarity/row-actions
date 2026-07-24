@@ -1,6 +1,14 @@
 # Release Notes
 
-## 3.0.5
+## NEXT RELEASE
+
+### Features
+- **`close()` method** - Programmatically close a toolbar; also cancels any pending open
+- **`RowActionsDirective.closeAll()`** (static) - Close every toolbar on the page (e.g. before opening a drawer from a row click)
+- **`closeOnClick` input** (default `true`) - Clicking a row automatically closes every toolbar, so none stays floating above a drawer or dialog opened by the click; set to `false` to opt out
+
+### Tooling
+- **Karma → Vitest 4 (browser mode on Playwright Chromium)** - Angular `unit-test` builder; no more `CHROME_BIN`; CI installs Chromium via `npx playwright install`
 
 ---
 

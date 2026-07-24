@@ -114,6 +114,23 @@ The directive supports 3 visual variants:
 | Input | Type | Default | Description |
 |-------|------|---------|-------------|
 | `disabled` | `boolean` | `false` | Disables the component (hides it completely) |
+| `closeOnClick` | `boolean` | `true` | Closes every toolbar when the row is clicked — a row click usually opens a drawer or navigates, and no toolbar should stay floating above it. Set to `false` to keep the toolbar open. |
+
+### Methods
+
+| Method | Description |
+|--------|-------------|
+| `close()` | Immediately closes this toolbar and cancels any pending open. |
+| `RowActionsDirective.closeAll()` <sub>static</sub> | Closes every toolbar on the page. Call it when a row click opens a drawer or dialog, so no toolbar stays floating above the overlay. |
+
+```typescript
+import { RowActionsDirective } from '@softwarity/row-actions';
+
+protected onRowClick(row: Row): void {
+  RowActionsDirective.closeAll(); // no toolbar left hovering over the drawer
+  this.openDrawer(row);
+}
+```
 
 ### Position Behavior
 

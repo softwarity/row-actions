@@ -11,8 +11,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
       - run: npm ci
+      # Vitest runs in browser mode on Playwright's Chromium — no CHROME_BIN.
+      - run: npx playwright install --with-deps chromium
       - run: npm run build
       - run: npm run test:ci
       - name: Upload coverage reports
