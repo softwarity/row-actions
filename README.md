@@ -140,6 +140,10 @@ The toolbar automatically detects its position within the cell and animates acco
 
 You can place `<span rowActions>` in **any cell** of your table, not just a dedicated "actions" column. This allows you to add contextual actions to specific data columns.
 
+### Scroll Behavior
+
+Any scroll — the page or a scrollable container around the table — closes every open toolbar. Scrolling slides the row out from under the cursor without firing a single `mousemove`, so a toolbar left open would stay attached to a row the user is no longer pointing at, and an action would hit the wrong one. The toolbar reopens on the correct row as soon as the mouse moves again.
+
 ## Theming (Material 3)
 
 The component provides a SCSS mixin to customize the toolbar colors. This approach follows Angular Material's theming pattern.

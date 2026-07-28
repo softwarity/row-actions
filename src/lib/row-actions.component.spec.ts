@@ -365,6 +365,40 @@ describe('RowActionsDirective', () => {
       expect(component.open$.getValue()).toBe(false);
     });
 
+    it('should close on scroll', async () => {
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
+      const matRow = fixture.debugElement.query(By.css('mat-row'));
+
+      // Open first
+      matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(100); // Wait for OPEN_DELAY
+      fixture.detectChanges();
+      expect(component.open$.getValue()).toBe(true);
+
+      // A scroll on any element reaches the document in the capture phase
+      matRow.nativeElement.dispatchEvent(new Event('scroll', { bubbles: false }));
+      fixture.detectChanges();
+
+      expect(component.open$.getValue()).toBe(false);
+    });
+
+    it('should not react to scroll once closed', async () => {
+      const component = rowActionDebugElement.componentInstance as RowActionsDirective;
+      const matRow = fixture.debugElement.query(By.css('mat-row'));
+      const closeAllSpy = vi.spyOn(RowActionsDirective, 'closeAll');
+
+      // Open then close, which must detach the scroll listener
+      matRow.nativeElement.dispatchEvent(new MouseEvent('mousemove'));
+      await waitForTimeout(100); // Wait for OPEN_DELAY
+      component.close();
+      fixture.detectChanges();
+
+      matRow.nativeElement.dispatchEvent(new Event('scroll', { bubbles: false }));
+
+      expect(closeAllSpy).not.toHaveBeenCalled();
+      closeAllSpy.mockRestore();
+    });
+
     it('closeAll() should close every open toolbar', async () => {
       const component = rowActionDebugElement.componentInstance as RowActionsDirective;
       const matRow = fixture.debugElement.query(By.css('mat-row'));

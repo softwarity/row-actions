@@ -49,6 +49,11 @@ export class RowActionsDirective implements AfterViewInit {
   private static readonly OPEN_DELAY = 50;
   private static readonly CLOSE_DELAY = 50;
 
+  // Capture phase: a scroll inside a nested scrollable container (a
+  // `div[style="overflow:auto"]` wrapping the table) does not bubble, so only a
+  // capturing listener on the document sees it.
+  private static readonly SCROLL_LISTENER_OPTIONS: AddEventListenerOptions = { capture: true, passive: true };
+
   // Track all instances to close others when one opens
   private static instances = new Set<RowActionsDirective>();
 
@@ -166,7 +171,7 @@ export class RowActionsDirective implements AfterViewInit {
           }
 
           this.open$.next(true);
-          document.addEventListener('mousemove', this.documentMouseMoveListener);
+          this.attachDocumentListeners();
         }, RowActionsDirective.OPEN_DELAY);
       }
     };
@@ -184,7 +189,7 @@ export class RowActionsDirective implements AfterViewInit {
       if (this.closeTimeoutId) {
         clearTimeout(this.closeTimeoutId);
       }
-      document.removeEventListener('mousemove', this.documentMouseMoveListener);
+      this.detachDocumentListeners();
       if (this.matRowElement) {
         if (this.rowMouseMoveListener) {
           this.matRowElement.removeEventListener('mousemove', this.rowMouseMoveListener);
@@ -218,9 +223,27 @@ export class RowActionsDirective implements AfterViewInit {
     }
     if (this.open$.value) {
       this.open$.next(false);
-      document.removeEventListener('mousemove', this.documentMouseMoveListener);
+      this.detachDocumentListeners();
     }
   }
+
+  private attachDocumentListeners(): void {
+    document.addEventListener('mousemove', this.documentMouseMoveListener);
+    document.addEventListener('scroll', this.documentScrollListener, RowActionsDirective.SCROLL_LISTENER_OPTIONS);
+  }
+
+  private detachDocumentListeners(): void {
+    document.removeEventListener('mousemove', this.documentMouseMoveListener);
+    document.removeEventListener('scroll', this.documentScrollListener, RowActionsDirective.SCROLL_LISTENER_OPTIONS);
+  }
+
+  // Scrolling slides the row out from under the cursor without firing any
+  // mousemove, so the toolbar would stay pinned to a row the user is no longer
+  // pointing at — and an action would hit the wrong one. Close every toolbar
+  // and let the next mousemove reopen the right one.
+  private readonly documentScrollListener = (): void => {
+    RowActionsDirective.closeAll();
+  };
 
   private readonly documentMouseMoveListener = (event: MouseEvent): void => {
     if (this.matRowElement) {
@@ -243,7 +266,7 @@ export class RowActionsDirective implements AfterViewInit {
       this.closeTimeoutId = setTimeout(() => {
         this.closeTimeoutId = null;
         this.open$.next(false);
-        document.removeEventListener('mousemove', this.documentMouseMoveListener);
+        this.detachDocumentListeners();
       }, RowActionsDirective.CLOSE_DELAY);
     }
   };
