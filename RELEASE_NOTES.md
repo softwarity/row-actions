@@ -2,6 +2,10 @@
 
 ## NEXT RELEASE
 
+---
+
+## 3.1.2
+
 ### Fixes
 - **Toolbar no longer drifts on scroll** - Any scroll (page or a scrollable container around the table) now closes every open toolbar. Scrolling moves the row out from under the cursor without firing a `mousemove`, so the toolbar used to stay pinned to a row the user was no longer pointing at. The scroll is detected in the capture phase, which also covers a table wrapped in an `overflow: auto` container — a case the CDK's default `reposition` scroll strategy misses. The toolbar reopens on the correct row at the next mouse move.
 
